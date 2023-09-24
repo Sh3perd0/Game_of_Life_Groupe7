@@ -10,14 +10,14 @@ hauteur_fenetre = 1020
 blanc = (255,255,255)
 
 # Création de la fenêtre
-fenetre = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre))
+screen = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre))
 pygame.display.set_caption("grille_test")
 
 
 
 #construire la classe BOB
 class Bob:
-	def __init__(self, spd, mas, nrgy, case ,pos, color): #initialisation
+	def __init__(self, spd, mas, nrgy, case ,pos): #initialisation
 		self.scale = mas*50
 		load_bob = pygame.image.load("Bob.png")
 		self.img_bob = pygame.transform.scale(load_bob,(self.scale,self.scale))
@@ -25,12 +25,12 @@ class Bob:
 		self.mass = mas
 		self.energy = nrgy
 		self.position = pos
-		fenetre.blit(self.img_bob, (case[pos][0]-1/2*self.scale, case[pos][1]-3/4*self.scale))
+		screen.blit(self.img_bob, (case[pos][0]-1/2*self.scale, case[pos][1]-3/4*self.scale))
 		
 	def mouvement(self,rand_pos, scale, case): #fonction pour bouger dans BOB
 		load_bob = pygame.image.load("Bob.png")
 		img_bob = pygame.transform.scale(load_bob,(scale,scale))
-		fenetre.blit(img_bob, (case[rand_pos][0]-1/2*scale, case[rand_pos][1]-3/4*scale))
+		screen.blit(img_bob, (case[rand_pos][0]-1/2*scale, case[rand_pos][1]-3/4*scale))
 		#fenetre.blit(img_bob, (pos_x, pos_y))
 
 			
@@ -42,7 +42,7 @@ class Cube:
 	def __init__(self, x_image, y_image, size_cube):
 		load_cube = pygame.image.load("cube_img2.png")
 		img_cube = pygame.transform.scale(load_cube, (size_cube,size_cube))
-		fenetre.blit(img_cube, (x_image, y_image))
+		screen.blit(img_cube, (x_image, y_image))
 
 
 #La Classe Grille est constitué de nb_cell*nb_cell fois la classe Cube
@@ -80,14 +80,14 @@ nb_cell = 10 #taille d'un coté de la map
 size_cube = 100 #taille des cubes
 
 
-fenetre.fill(blanc)
+screen.fill(blanc)
 grille = Grille(nb_cell, size_cube)
 
 nb_bob = 4
 all_bob = []
 for i in range(nb_bob):
 	position_bob = (r.randint(0,nb_cell*nb_cell-1))
-	bob = Bob(1,r.uniform(0.5,1.5),1,grille.case,position_bob, "Bob.png")
+	bob = Bob(1,r.uniform(0.5,1.5),1,grille.case,position_bob)
 	all_bob.append(bob)
 
 
@@ -102,7 +102,7 @@ def main():
 			if event.type == pygame.QUIT: #evenement si l'on quitte le jeu
 				pygame.quit() 
 		        
-		fenetre.fill(blanc)
+		screen.fill(blanc)
 		grille = Grille(nb_cell, size_cube) #recréation de la grille 
 		
 
