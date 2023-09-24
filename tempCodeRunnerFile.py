@@ -1,0 +1,1 @@
+draw_isometric_grid()
