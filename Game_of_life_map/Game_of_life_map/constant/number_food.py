@@ -1,0 +1,1 @@
+NUMBER_FOOD = 5

@@ -1,0 +1,1 @@
+NUMBER_BOB = 5

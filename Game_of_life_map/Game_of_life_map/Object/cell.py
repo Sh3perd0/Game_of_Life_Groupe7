@@ -1,47 +1,52 @@
 import pygame 
-
-
+from constant.cell_size import CELL_SIZE
+import os
+from .common import *
 class Cell:
-    def __init__ (self, size, grid_x, grid_y):
-        self.size = size
-
-        self.tile = self.load_images()
+    def __init__ (self, grid_x, grid_y):
         self.iso_poly = self.create_cell(grid_x, grid_y)["iso_poly"]
         self.render_pos = self.create_cell(grid_x,grid_y)["render_pos"] 
+  
+    def create_cell (self, grid_x, grid_y):
+        rect = get_cart_rect_pos (grid_x, grid_y)
+
+        iso_poly = [cart_to_iso(x, y) for x, y in rect]
         
-    def create_cell(self, grid_x, grid_y):
-        
-        rect = [
-            (grid_x * self.size, grid_y * self.size),
-            (grid_x * self.size + self.size, grid_y * self.size),
-            (grid_x * self.size + self.size, grid_y * self.size + self.size),
-            (grid_x * self.size, grid_y * self.size + self.size)
-        ]
-
-        iso_poly = [self.cart_to_iso(x, y) for x, y in rect]
-
-        minx = min([x for x, y in iso_poly])
-        miny = min([y for x, y in iso_poly])
-
+        render_pos = get_render_pos(grid_x, grid_y)
 
         out = {
            # "grid": [grid_x, grid_y],#The order[][] of cell 
             "cart_rect": rect,#The position of cell in cart (Can remove)
             "iso_poly": iso_poly,#The position of cell in iso
-            "render_pos": [minx, miny],#The position to insert image 
+            "render_pos": render_pos#The position to insert image 
         }
 
         return out
     
+
+    
     @staticmethod
-    def cart_to_iso(x, y):
-        iso_x = x - y
-        iso_y = (x + y)/2
-        return iso_x, iso_y
-   
+    def get_assets_img():
 
-    def load_images(self):
-
-        tile = pygame.image.load ("assets/block.png").convert_alpha()
+        tile = pygame.image.load (
+                os.path.abspath(
+                    os.path.join(os.path.dirname(__file__), "..", "assets", "grass.png")
+                )).convert_alpha()
 
         return tile
+    
+    # @staticmethod
+    def get_pixel_cells_size():
+        return 321/4, 161/4
+
+    
+    # Transform the size of block's asset as standard
+    @staticmethod
+    def get_scaled_blocks(
+        width_pixel_size=None, height_pixel_size=None
+    ):  # pragma: no cover
+        if width_pixel_size is None or height_pixel_size is None:
+            width_pixel_size, height_pixel_size = Cell.get_pixel_cells_size()
+        return pygame.transform.smoothscale(Cell.get_assets_img(),(width_pixel_size, height_pixel_size)).convert_alpha()
+    
+    

@@ -2,7 +2,8 @@
 import pygame 
 import sys
 
-from Object.game import Game
+
+from object.game import Game
 
 
 def main():
@@ -14,6 +15,7 @@ def main():
     pygame.mixer.init()
     screen = pygame.display.set_mode((0, 0))
     clock = pygame.time.Clock()
+    frame_rate = 60 
 
     # implement menus
 
@@ -21,7 +23,7 @@ def main():
     game = Game(screen, clock)
 
     while running:
-
+        clock.tick(frame_rate)
         # start menu goes here
 
         while playing:
