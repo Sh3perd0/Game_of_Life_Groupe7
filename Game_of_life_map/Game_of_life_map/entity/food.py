@@ -10,7 +10,7 @@ class Food(Entity):
         super().__init__()
     
     def set_energy(self, energy = 100):
-        self.energy = energy
+        self.energy = 100
 
     def set_position (self):
         self.grid_x = random.randint(0, GRID_SIZE - 1)
@@ -26,16 +26,15 @@ class Food(Entity):
                 )).convert_alpha()
 
         return tile 
+     
+    def get_pixel_food_size(self):
+        return 321/4*self.energy/100, 30*self.energy/100
     
-    @staticmethod  
-    def get_pixel_food_size():
-        return 321/4, 30
     
-    @staticmethod
-    def get_scaled_food(
+    def get_scaled_food(self,
         width_pixel_size=None, height_pixel_size=None
     ):  # pragma: no cover
         if width_pixel_size is None or height_pixel_size is None:
-            width_pixel_size, height_pixel_size = Food.get_pixel_food_size()
-        return pygame.transform.smoothscale(Food.get_assets_img(),(width_pixel_size, height_pixel_size)).convert_alpha()
+            width_pixel_size, height_pixel_size = self.get_pixel_food_size()
+        return pygame.transform.smoothscale(self.get_assets_img(),(width_pixel_size, height_pixel_size)).convert_alpha()
     

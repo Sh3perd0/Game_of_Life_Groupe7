@@ -1,7 +1,7 @@
 import pygame
 import random
-from constant.grid_size import GRID_SIZE
 import os
+from constant.grid_size import GRID_SIZE
 from constant.cell_size import CELL_SIZE
 from object.common import *
 from entity.entity import Entity
@@ -24,9 +24,9 @@ class Bob (Entity):
     def set_position (self, grid_x, grid_y):
         self.grid_x = grid_x
         self.grid_y = grid_y
-        
+
     def get_target(self):
-        target = pygame.Vector2(0, 0)
+        target = pygame.Vector2(random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1))
         return target
     
     def move(self, dx, dy):
@@ -69,18 +69,16 @@ class Bob (Entity):
                 )).convert_alpha()
 
         return tile 
-    
-    @staticmethod  
-    def get_pixel_bob_size():
-        return 321/4, 30
+      
+    def get_pixel_bob_size(self):
+        return 321/4 * self.energy/100, 30*self.energy/100
          
-    @staticmethod
-    def get_scaled_bob(
+    def get_scaled_bob(self,
         width_pixel_size=None, height_pixel_size=None
     ):  # pragma: no cover
         if width_pixel_size is None or height_pixel_size is None:
-            width_pixel_size, height_pixel_size = Bob.get_pixel_bob_size()
-        return pygame.transform.smoothscale(Bob.get_assets_img(),(width_pixel_size, height_pixel_size)).convert_alpha()
+            width_pixel_size, height_pixel_size = self.get_pixel_bob_size()
+        return pygame.transform.smoothscale(self.get_assets_img(),(width_pixel_size, height_pixel_size)).convert_alpha()
     
         
 

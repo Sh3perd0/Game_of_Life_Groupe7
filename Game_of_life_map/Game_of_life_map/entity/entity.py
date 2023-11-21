@@ -12,6 +12,4 @@ class Entity :
         self.energy = 0
         self.set_energy()
     
-    def set_energy(self, energy):
-        self.energy = energy
     
