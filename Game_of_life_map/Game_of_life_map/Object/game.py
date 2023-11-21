@@ -10,6 +10,7 @@ from entity.bob import Bob
 from .common import *
 from entity.food import Food
 from entity.entity import Entity
+from logic_game.entity_activity import EntityActivity
 
 class Game:
     
@@ -22,7 +23,8 @@ class Game:
         self.map = Map(GRID_SIZE, GRID_SIZE)
         self.map.render_map()
         self.list_bob = self.create_list_bob()
-        self.list_food = self.create_list_food()
+        self.dict_food = self.create_dict_food()
+        self.entity_activity = EntityActivity(self.list_bob, self.dict_food)
         self.tick = 0
         self.day = 0
 
@@ -72,7 +74,7 @@ class Game:
         scroll = self.camera.scroll
         for bob in self.list_bob :
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
-            self.screen.blit(Bob.get_scaled_bob(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
+            self.screen.blit(bob.get_scaled_bob(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
                                                      render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
 
     def create_list_bob (self):
@@ -87,45 +89,36 @@ class Game:
             bob.move_towards_target()
 
         
-    def create_list_food (self):
-        food_list = []
-        for _ in range (NUMBER_FOOD):
-            food = Food()
-            food.set_position()
-            food_list.append(food)
-        return food_list
+    def create_dict_food (self):
+            dict_food = {}
+            for _ in range (NUMBER_FOOD):
+                food = Food()
+                food.set_position()
+                position = (food.grid_x, food.grid_y)
+                if  position in dict_food:
+                    dict_food[position].energy += 100
+                else:
+                    dict_food[position] = food
+            return dict_food
     
     def draw_food(self):
         map_block_tiles = self.map.block_tiles
         scroll = self.camera.scroll
-        for food in self.list_food:
+        for food in self.dict_food.values():
             render_pos = get_render_pos (food.grid_x, food.grid_y)
-            self.screen.blit (Food.get_scaled_food(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x, render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
+            self.screen.blit (food.get_scaled_food(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x, render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
     
     # bob reproduces when the energy>=200                                                
     def reproduce(self): 
-        for bob in self.list_bob:
-            if bob.energy>=200:
-                bob.energy=50
-                bob1=Bob()
-                bob1.set_position(bob.grid_x, bob.grid_y)
-                self.list_bob.append(bob1) 
-                bob1.energy = 50
-                bob1.speed = round((random.uniform(bob.speed-0.1,bob.speed+0.1)), 2)
+        self.entity_activity.reproduce()
 
     # bob eat food
     def eat_food(self) :
-        for bob in self.list_bob:
-            for food in self.list_food:
-                if (food.grid_x==bob.grid_x) and (food.grid_y==bob.grid_y):
-                    self.list_food.remove(food)
-                    bob.energy+=min(100,200-bob.energy)
+        self.entity_activity.bob_eat_food()
 
     # bob die : lost all of energy
     def die(self):
-        for bob in self.list_bob:
-            if bob.energy<=0:
-                self.list_bob.remove(bob)
+        self.entity_activity.die()
 
     
     def draw_text(self):
