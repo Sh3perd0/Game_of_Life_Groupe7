@@ -12,6 +12,7 @@ class Bob (Entity):
         self.set_initial_position()
         self.speed = 1  
         self.target = self.get_target()
+        self.font = pygame.font.Font(None, 36)
 
     
     def set_energy(self, energy = 100):

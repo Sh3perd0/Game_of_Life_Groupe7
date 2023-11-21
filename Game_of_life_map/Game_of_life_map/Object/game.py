@@ -76,7 +76,11 @@ class Game:
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
             self.screen.blit(bob.get_scaled_bob(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
                                                      render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
-
+            energy_text = bob.font.render(f'E: {bob.energy}', True, (255, 255, 255))
+            text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
+                                                  render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
+            self.screen.blit(energy_text, text_rect)
+        
     def create_list_bob (self):
         bob_list = []
         for _ in range(NUMBER_BOB):
@@ -87,7 +91,7 @@ class Game:
     def update_move_bob (self):
         for bob in self.list_bob:
             bob.move_towards_target()
-
+            bob.energy-=1
         
     def create_dict_food (self):
             dict_food = {}
