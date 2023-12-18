@@ -15,7 +15,13 @@ class EntityActivity :
         if (entity_1.grid_x == entity_2.grid_x and entity_1.grid_y == entity_2.grid_y):
             return True
         return False
-
+    
+    # def check_food (bob, entity):
+    #     if EntityActivity.check_collision(bob, entity):
+    #         if entity is Food :
+    #             return True
+    #         else:
+    #             if 
     def bob_eat_food(self):
         keys_to_remove = []
         for bob in self.list_bob:
