@@ -48,17 +48,18 @@ class EntityActivity :
     def sexual_reproduction(self):
         for bob1 in self.list_bob:
             for bob2 in self.list_bob:
-                if ((bob1.grid_x == bob2.grid_x) and (bob1.grid_y == bob2.grid_y)):
-                    if ((bob1.energy >= ENERGY_TO_REPRODUCE) and (bob2.energy >=ENERGY_TO_REPRODUCE)):
-                        bob1.set_energy(bob1.energy-LOSE_ENERGY_AFTER_REPR)
-                        bob2.set_energy(bob2.energy-LOSE_ENERGY_AFTER_REPR)
-                        baby = Bob()
-                        baby.set_energy(NEW_ENERGY_REPRODUCE)
-                        baby.set_perception((bob1.perception+bob2.perception)/2)
-                        baby.set_speed((bob1.speed + bob2.speed)/2)
-                        baby.set_position(bob1.grid_x,bob1.grid_y)
-                        baby.set_mass((bob1.mass+bob2.mass)/2)
-                        self.list_bob.append(baby)
+                if (bob1 != bob2):
+                    if (self.check_collision(bob1,bob2)):
+                        if ((bob1.energy >= ENERGY_TO_REPRODUCE) and (bob2.energy >=ENERGY_TO_REPRODUCE)):
+                            print("naissance")
+                            bob2.set_energy(bob2.energy-LOSE_ENERGY_AFTER_SEX)
+                            baby = Bob()
+                            baby.set_energy(NEW_ENERGY_REPRODUCE)
+                            baby.set_perception((bob1.perception+bob2.perception)/2)
+                            baby.set_speed((bob1.speed + bob2.speed)/2)
+                            baby.set_position(bob1.grid_x,bob1.grid_y)
+                            baby.set_mass((bob1.mass+bob2.mass)/2)
+                            self.list_bob.append(baby)
 
 
     def die(self):
