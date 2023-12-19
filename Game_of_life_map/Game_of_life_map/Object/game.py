@@ -18,7 +18,6 @@ class Game:
         self.screen = screen
         self.clock = clock
         self.width, self.height = self.screen.get_size()
-
         self.camera = Camera(self.width, self.height)
         self.map = Map(GRID_SIZE, GRID_SIZE)
         self.map.render_map()
@@ -30,10 +29,9 @@ class Game:
 
     def run(self):
         self.playing = True
-        
         # pygame.display.set_window_position(, )
         while self.playing:
-            self.clock.tick (5)
+            self.clock.tick (2)
             self.events()
             self.camera.update()
             self.update_move_bob()
@@ -41,12 +39,13 @@ class Game:
             self.eat_food()
             self.reproduce()
             self.die()
+            self.get_target_new()
+            self.update_perception()
             self.tick +=1
             if self.tick == 100:
                 self.tick=0
                 self.day+=1
     
-
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -56,8 +55,6 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-    
-
 
     def draw (self):
         scroll = self.camera.scroll
@@ -76,7 +73,7 @@ class Game:
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
             self.screen.blit(bob.get_scaled_bob(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
                                                      render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
-            energy_text = bob.font.render(f'E: {bob.energy}', True, (255, 255, 255))
+            energy_text = bob.font.render(f'E: {bob.energy}, P: {bob.perception}, V: {bob.speed}', True, (255, 255, 255))
             text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
                                                   render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
             self.screen.blit(energy_text, text_rect)
@@ -91,7 +88,6 @@ class Game:
     def update_move_bob (self):
         for bob in self.list_bob:
             bob.move_towards_target()
-            bob.energy-=1
         
     def create_dict_food (self):
             dict_food = {}
@@ -134,3 +130,9 @@ class Game:
         text_rect_day = text_surface.get_rect(topleft=(1000,0))
         self.screen.blit (text_surface, text_rect)
         self.screen.blit (text_surface_day, text_rect_day)
+
+    def get_target_new(self):
+        self.entity_activity.get_target_new()
+        
+    def update_perception(self):
+        self.entity_activity.update_perception()

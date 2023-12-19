@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/trucq/Downloads/Game_of_Life_Groupe7-Map_food/Game_of_Life_Groupe7-Map_food/Game_of_life_map/Game_of_life_map/Object",
-      "program": "c:/Users/trucq/Downloads/Game_of_Life_Groupe7-Map_food/Game_of_Life_Groupe7-Map_food/Game_of_life_map/Game_of_life_map/Object/build/Debug/outDebug",
+      "cwd": "c:/Users/trucq/Downloads/Game_of_Life_Groupe7-Map_food/Game_of_life_map/Game_of_life_map",
+      "program": "c:/Users/trucq/Downloads/Game_of_Life_Groupe7-Map_food/Game_of_life_map/Game_of_life_map/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
