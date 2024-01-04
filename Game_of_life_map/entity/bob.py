@@ -11,6 +11,7 @@ class Bob (Entity):
         self.set_initial_position()
         self.speed = 1
         self.target = self.get_target()
+        self.font = pygame.font.Font(None, 36)
         self.perception = 0
         self.mass = 1
 
@@ -49,27 +50,35 @@ class Bob (Entity):
         # Calculate the difference between Bob's position and the target position
         dx = self.target[0] - self.grid_x
         dy = self.target[1] - self.grid_y
-        
-        dx_direction=0
-        dy_direction=0
-        if dx!=0 or dy!=0:
-            if dx==0:
-                dy_direction = 1 if dy > 0 else -1
-            if dy==0:
-                dx_direction = 1 if dx > 0 else -1
-            if (dx!=0 and dy!=0):
-                dir=random.randint(0,1)
-                if dir==0:
-                    dx_direction = 1 if dx > 0 else -1
-                if dir==1:
-                    dy_direction = 1 if dy > 0 else -1
-            self.energy-=1
-        else: self.energy-=0.5
+
+        if dx != 0 or dy != 0:
+            self.energy -= 1
+        else:
+            self.energy -= 0.5
+            return
+
         # Adjust Bob's position based on speed
-        dx_move = min(abs(dx), self.speed) * dx_direction
-        dy_move = min(abs(dy), self.speed) * dy_direction
-        # Move Bob
-        self.move(dx_move, dy_move)
+        for _ in range(self.speed):
+            dx_direction = 0
+            dy_direction = 0
+
+            if dx != 0 or dy != 0:
+                if dx == 0:
+                    dy_direction = 1 if dy > 0 else -1
+                elif dy == 0:
+                    dx_direction = 1 if dx > 0 else -1
+                else:
+                    dir = random.randint(0, 1)
+                    if dir == 0:
+                        dx_direction = 1 if dx > 0 else -1
+                    else:
+                        dy_direction = 1 if dy > 0 else -1
+
+                dx -= dx_direction
+                dy -= dy_direction
+
+                # Move Bob
+                self.move(dx_direction, dy_direction)
 
     
     @staticmethod
@@ -93,6 +102,3 @@ class Bob (Entity):
         return pygame.transform.smoothscale(self.get_assets_img(),(width_pixel_size, height_pixel_size)).convert_alpha()
     
         
-
-           
-

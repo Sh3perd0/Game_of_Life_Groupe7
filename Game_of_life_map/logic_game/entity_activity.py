@@ -6,10 +6,9 @@ from constant.settings import*
 
 
 class EntityActivity :
-
-    def __init__ (self):
-        self.list_bob = self.create_list_bob()
-        self.dict_food = self.create_dict_food()
+    def __init__ (self, list_bob, dict_food):
+        self.list_bob = list_bob
+        self.dict_food = dict_food
     
     @staticmethod
     def check_collision (entity_1, entity_2):
@@ -17,29 +16,6 @@ class EntityActivity :
             return True
         return False
 
-    def create_list_bob (self):
-        bob_list = []
-        for _ in range(NUMBER_BOB):
-            bob = Bob()
-            bob_list.append(bob) 
-        return bob_list  
-
-    def create_dict_food (self):
-        dict_food = {}
-        for _ in range (NUMBER_FOOD):
-            food = Food()
-            food.set_position()
-            position = (food.grid_x, food.grid_y)
-            if  position in dict_food:
-                dict_food[position].energy += 100
-            else:
-                dict_food[position] = food
-            return dict_food
-
-    def update_move_bob (self):
-        for bob in self.list_bob:
-            bob.move_towards_target()
-            
     def bob_eat_food(self):
         keys_to_remove = []
         for bob in self.list_bob:
@@ -112,15 +88,25 @@ class EntityActivity :
                 bob.target = pygame.Vector2(random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1))
             
     def update_perception(self):
-        for bob in self.list_bob:
-            rand_num = random.randint(1,3)
-            if rand_num == 1:
-                bob.perception+=1
-            elif rand_num == 2:
+            for bob in self.list_bob:
                 if bob.perception > 0:
-                    bob.perception -=1    
-                        
-                                     
-
-                
-            
+                    rand_num = random.randint(1,3)
+                    if rand_num == 1:
+                        bob.perception+=1
+                    elif rand_num == 2:
+                        bob.perception -=1    
+                    else:
+                        pass
+                else:
+                    rand_num = random.randint(1,2)       
+                    if rand_num == 1:
+                        bob.perception+=1
+                    else: 
+                        pass
+    
+    def bob_eat_bob(self):
+        for bob1 in self.list_bob:
+            for bob2 in self.list_bob:
+                if bob1.mass > 3/2 * bob2.mass:
+                    bob1.energy = bob1.energy + 1/2*bob2*(1 - bob2.mass/bob1.mass)
+                    bob2.energy = 0
