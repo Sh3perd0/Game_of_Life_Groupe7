@@ -6,14 +6,16 @@ from object.common import *
 from entity.entity import Entity
 
 class Bob (Entity):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, speed = 1, energy = 100, perception = 0, mass = 1):
+        super().__init__(energy)
         self.set_initial_position()
-        self.speed = 1
-        self.target = self.get_target()
+        self.speed = speed
+        self.total_speed = self.speed
+        self.target = (random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1))
         self.font = pygame.font.Font(None, 36)
-        self.perception = 0
-        self.mass = 1
+        self.perception = perception
+        self.mass = mass
+        self.speed_buffer = float(self.total_speed - int(self.total_speed))
 
     def set_mass(self, mass):
         self.mass = mass
@@ -34,16 +36,16 @@ class Bob (Entity):
     def set_position (self, grid_x, grid_y):
         self.grid_x = grid_x
         self.grid_y = grid_y
-
-    def get_target(self):
-        target = (random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1))
-        return target
     
     def move(self, dx, dy):
         self.grid_x += dx
         self.grid_y += dy
         # Keep track of the movement history
         # self.history.append((self.grid_x, self.grid_y))
+
+    def update_speed (self):
+        self.total_speed = self.speed + self.speed_buffer
+        self.speed_buffer = self.total_speed - int(self.total_speed)
 
 
     def move_towards_target(self):
@@ -52,33 +54,37 @@ class Bob (Entity):
         dy = self.target[1] - self.grid_y
 
         if dx != 0 or dy != 0:
-            self.energy -= 1
-        else:
-            self.energy -= 0.5
-            return
+            self.energy = max (0, self.energy - int(self.total_speed)**2)
 
-        # Adjust Bob's position based on speed
-        for _ in range(self.speed):
-            dx_direction = 0
-            dy_direction = 0
+            # Adjust Bob's position based on speed
+            for _ in range(int(self.total_speed)):
+                dx_direction = 0
+                dy_direction = 0
 
-            if dx != 0 or dy != 0:
-                if dx == 0:
-                    dy_direction = 1 if dy > 0 else -1
-                elif dy == 0:
-                    dx_direction = 1 if dx > 0 else -1
-                else:
-                    dir = random.randint(0, 1)
-                    if dir == 0:
+                if dx != 0 or dy != 0:
+                    if dx == 0:
+                        dy_direction = 1 if dy > 0 else -1
+                    elif dy == 0:
                         dx_direction = 1 if dx > 0 else -1
                     else:
-                        dy_direction = 1 if dy > 0 else -1
+                        dir = random.randint(0, 1)
+                        if dir == 0:
+                            dx_direction = 1 if dx > 0 else -1
+                        else:
+                            dy_direction = 1 if dy > 0 else -1
 
-                dx -= dx_direction
-                dy -= dy_direction
+                    dx -= dx_direction
+                    dy -= dy_direction
 
-                # Move Bob
-                self.move(dx_direction, dy_direction)
+                    # Move Bob
+                    self.move(dx_direction, dy_direction)
+        else:
+            self.energy -= 0.5
+        
+        self.update_speed()
+
+
+        
 
     
     @staticmethod

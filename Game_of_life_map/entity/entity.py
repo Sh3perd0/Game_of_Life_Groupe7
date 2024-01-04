@@ -4,10 +4,9 @@ from constant.settings import*
 from object.common import *
 
 class Entity :
-    def __init__ (self):
+    def __init__ (self, energy = 100):
         self.grid_x = 0
         self.grid_y = 0
-        self.energy = 0
-        self.set_energy()
+        self.energy = 100
     
     

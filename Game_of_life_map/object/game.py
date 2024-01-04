@@ -30,21 +30,21 @@ class Game:
         self.playing = True
         # pygame.display.set_window_position(, )
         while self.playing:
-            self.clock.tick (2)
+            self.clock.tick (1)
             self.events()
             self.camera.update()
             self.update_move_bob()
             self.draw()
             self.eat_food()
-            #self.reproduce()
+            self.reproduce()
             self.sexual_reproduction()
             self.die()
             self.get_target_new()
             self.update_perception()
-            self.tick +=1
+            self.tick += 1
             if self.tick == 100:
-                self.tick=0
-                self.day+=1
+                self.tick = 0
+                self.day += 1
     
     def events(self):
         for event in pygame.event.get():
@@ -73,7 +73,7 @@ class Game:
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
             self.screen.blit(bob.get_scaled_bob(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
                                                      render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
-            energy_text = bob.font.render(f'E: {bob.energy}, P: {bob.perception}', True, (255, 255, 255))
+            energy_text = bob.font.render(f'E: {bob.energy}, P: {bob.perception}, T: {bob.target}, IV: {bob.speed}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
             text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
                                                   render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
             self.screen.blit(energy_text, text_rect)

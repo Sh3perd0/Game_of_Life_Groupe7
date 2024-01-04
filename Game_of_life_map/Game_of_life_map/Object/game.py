@@ -73,7 +73,7 @@ class Game:
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
             self.screen.blit(bob.get_scaled_bob(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
                                                      render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
-            energy_text = bob.font.render(f'E: {bob.energy}, P: {bob.perception}, V: {bob.speed}', True, (255, 255, 255))
+            energy_text = bob.font.render(f'E: {bob.energy}, P: {bob.perception}, V: {bob.speed}', T:{bob.target}, True, (255, 255, 255))
             text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
                                                   render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
             self.screen.blit(energy_text, text_rect)
