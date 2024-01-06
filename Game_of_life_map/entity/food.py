@@ -8,6 +8,7 @@ from entity.entity import Entity
 class Food(Entity):
     def __init__(self):
         super().__init__()
+        self.font = pygame.font.Font(None, 36)
     
     def set_energy(self, energy = 100):
         self.energy = 100
@@ -28,7 +29,7 @@ class Food(Entity):
         return tile 
      
     def get_pixel_food_size(self):
-        return 321/4*self.energy/100, 30*self.energy/100
+        return 321/8*self.energy/100, 25/2*self.energy/100
     
     
     def get_scaled_food(self,

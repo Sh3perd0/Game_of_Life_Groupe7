@@ -98,7 +98,7 @@ class Bob (Entity):
         return tile 
       
     def get_pixel_bob_size(self):
-        return 321/4 * self.energy/100, 30*self.energy/100
+        return 321/8 * self.energy/100, 25/2*self.energy/100
          
     def get_scaled_bob(self,
         width_pixel_size=None, height_pixel_size=None

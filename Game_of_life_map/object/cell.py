@@ -37,7 +37,7 @@ class Cell:
     
     # @staticmethod
     def get_pixel_cells_size():
-        return 321/4, 161/4
+        return 321/8, 161/8
 
     
     # Transform the size of block's asset as standard
