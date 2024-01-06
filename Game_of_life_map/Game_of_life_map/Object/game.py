@@ -26,6 +26,7 @@ class Game:
         self.entity_activity = EntityActivity(self.list_bob, self.dict_food)
         self.tick = 0
         self.day = 0
+        self.game_tick = 0
 
     def run(self):
         self.playing = True

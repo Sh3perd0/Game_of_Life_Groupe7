@@ -24,7 +24,6 @@ class Game:
         self.entity_activity = EntityActivity(self.list_bob, self.dict_food)
         self.tick = 0
         self.day = 0
-        self.game_tick = 0
 
         # Set key repeat and event filter
         pygame.key.set_repeat(400, 30)
@@ -38,9 +37,9 @@ class Game:
             self.clock.tick (FRAME_RATE)
             self.events()
             self.camera.update()
-            self.update_render_tick()
             self.draw()
-            # if self.game_tick == FRAME_RATE:
+            self.update_render_tick()
+
     
     def events(self):
         for event in pygame.event.get():
@@ -53,12 +52,6 @@ class Game:
                     sys.exit()
 
     def update_render_tick (self):
-        self.game_tick += 1
-        if self.game_tick == FRAME_RATE:
-            self.game_tick = 0
-            self.increase_tick()
-    
-    def increment_tick (self):
         self.update_move_bob()
         self.eat_food()
         self.reproduce()
@@ -70,7 +63,7 @@ class Game:
         self.tick += 1
         if self.tick == 100:
             self.tick = 0   
-            self.increase_day()
+            self.increment_day()
     
     def increment_day(self):
         self.dict_food.copy(self.create_dict_food())
@@ -155,15 +148,15 @@ class Game:
         text_surface = font.render('tick={}'.format(self.tick), True, (255,255,255))
         text_surface_day = font.render('day={}'.format(self.day), True, (255,255,255))
         text_surface_fps = font.render('fps={}'.format(round(self.clock.get_fps())), True, (255,255,255))
-        text_surface_game_tick = font.render('game_tick={}'.format(self.game_tick), True, (255,255,255))
+        # text_surface_game_tick = font.render('game_tick={}'.format(self.game_tick), True, (255,255,255))
         text_rect = text_surface.get_rect(topleft=(0, 0))
-        text_rect_day = text_surface.get_rect(topleft=(0, 200))
-        text_rect_fps = text_surface.get_rect(topleft=(0, 300))
-        text_rect_game_tick = text_surface.get_rect(topleft=(0, 100))
+        text_rect_day = text_surface.get_rect(topleft=(0, 100))
+        text_rect_fps = text_surface.get_rect(topleft=(0, 200))
+        # text_rect_game_tick = text_surface.get_rect(topleft=(0, 100))
         self.screen.blit (text_surface, text_rect)
         self.screen.blit (text_surface_day, text_rect_day)
         self.screen.blit (text_surface_fps, text_rect_fps)
-        self.screen.blit (text_surface_game_tick, text_rect_game_tick)
+        # self.screen.blit (text_surface_game_tick, text_rect_game_tick)
 
     def get_target_new(self):
         self.entity_activity.get_target_new()
