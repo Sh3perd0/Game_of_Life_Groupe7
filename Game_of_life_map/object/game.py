@@ -66,7 +66,7 @@ class Game:
             self.increment_day()
     
     def increment_day(self):
-        self.dict_food.copy(self.create_dict_food())
+        self.dict_food = self.create_dict_food().copy()
         self.day += 1
 
     def draw (self):
@@ -117,14 +117,27 @@ class Game:
     def draw_food(self):
         map_block_tiles = self.map.block_tiles
         scroll = self.camera.scroll
-        for food in self.dict_food.values():
-            render_pos = get_render_pos (food.grid_x, food.grid_y)
-            self.screen.blit (food.get_scaled_food(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x, render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
-            energy_text = food.font.render(f'P: {food.grid_x, food.grid_y}', True, (255, 255, 255))
-            text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
-                                                  render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
-            self.screen.blit(energy_text, text_rect)
-    
+
+        # Assuming dict_food is a dictionary and not empty
+        first_food = next(iter(self.dict_food.values()), None)
+
+        if first_food:
+            # Pre-render the scaled food image
+            scaled_food_image = first_food.get_scaled_food()
+
+            for food in self.dict_food.values():
+                render_pos = get_render_pos(food.grid_x, food.grid_y)
+
+                # Use the pre-rendered scaled food image
+                self.screen.blit(scaled_food_image, (render_pos[0] + map_block_tiles.get_width() / 2 + scroll.x,
+                                                    render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y))
+
+                energy_text = food.font.render(f'P: {food.grid_x, food.grid_y}', True, (255, 255, 255))
+                text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width() / 2 + scroll.x,
+                                                        render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y - 20))
+                self.screen.blit(energy_text, text_rect)
+
+        
     # bob reproduces when the energy>=200                                                
     def reproduce(self): 
         self.entity_activity.reproduce()

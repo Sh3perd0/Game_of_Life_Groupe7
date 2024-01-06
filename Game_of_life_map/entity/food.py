@@ -29,7 +29,7 @@ class Food(Entity):
         return tile 
      
     def get_pixel_food_size(self):
-        return 321/8*self.energy/100, 25/2*self.energy/100
+        return 321/8 * self.energy/100, 25/2 * self.energy/100
     
     
     def get_scaled_food(self,
