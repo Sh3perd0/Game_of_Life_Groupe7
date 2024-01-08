@@ -1,13 +1,11 @@
-
-import pygame 
+import pygame
 import sys
-from constant.settings import*
+from constant.settings import *
 
 from object.game import Game
 
 
 def main():
-
     running = True
     playing = True
 
@@ -29,6 +27,6 @@ def main():
             # game loop here
             game.run()
 
+
 if __name__ == "__main__":
     main()
-
