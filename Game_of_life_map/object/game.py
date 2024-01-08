@@ -82,21 +82,20 @@ class Game:
     def draw_bob(self):
         map_block_tiles = self.map.block_tiles
         scroll = self.camera.scroll
+
+        image_bob = get_assets_img(BOB_IMAGE)
+
         for bob in self.list_bob :
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
-            self.screen.blit(bob.get_scaled_bob(), (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
+            self.screen.blit(get_scaled_image(image_bob, bob.get_pixel_bob_size()),  (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
                                                      render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
-            energy_text = bob.font.render(f'E: {bob.energy}, P: {bob.perception}, T: {bob.target}, IV: {bob.speed}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
-            text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
-                                                  render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
-            self.screen.blit(energy_text, text_rect)
+            # energy_text = bob.font.render(f'E: {bob.energy}, P: {bob.perception}, T: {bob.target}, IV: {bob.speed}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
+            # text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
+            #                                       render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
+            # self.screen.blit(energy_text, text_rect)
         
-    def create_list_bob (self):
-        bob_list = []
-        for _ in range(NUMBER_BOB):
-            bob = Bob()
-            bob_list.append(bob) 
-        return bob_list  
+    def create_list_bob(self):
+        return [Bob() for _ in range(NUMBER_BOB)]
 
     def update_move_bob (self):
         for bob in self.list_bob:
@@ -114,16 +113,17 @@ class Game:
                     dict_food[position] = food
             return dict_food
     
+    # This version is for food with same size (faster)
     def draw_food(self):
         map_block_tiles = self.map.block_tiles
         scroll = self.camera.scroll
-
         # Assuming dict_food is a dictionary and not empty
         first_food = next(iter(self.dict_food.values()), None)
 
         if first_food:
             # Pre-render the scaled food image
-            scaled_food_image = first_food.get_scaled_food()
+            image_food = get_assets_img(FOOD_IMAGE)
+            scaled_food_image = get_scaled_image(image_food, first_food.get_pixel_food_size())
 
             for food in self.dict_food.values():
                 render_pos = get_render_pos(food.grid_x, food.grid_y)
@@ -131,11 +131,23 @@ class Game:
                 # Use the pre-rendered scaled food image
                 self.screen.blit(scaled_food_image, (render_pos[0] + map_block_tiles.get_width() / 2 + scroll.x,
                                                     render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y))
+                
+                # # Display the text of position to the screen
+                # energy_text = food.font.render(f'P: {food.grid_x, food.grid_y}', True, (255, 255, 255))
+                # text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width() / 2 + scroll.x,
+                #                                         render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y - 20))
+                # self.screen.blit(energy_text, text_rect)
 
-                energy_text = food.font.render(f'P: {food.grid_x, food.grid_y}', True, (255, 255, 255))
-                text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width() / 2 + scroll.x,
-                                                        render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y - 20))
-                self.screen.blit(energy_text, text_rect)
+    # This version is for food with different size (slower)
+    # def draw_food(self):
+    #     map_block_tiles = self.map.block_tiles
+    #     scroll = self.camera.scroll
+    #     image_food = get_assets_img(FOOD_IMAGE)
+
+    #     for food in self.dict_food.values() :
+    #         render_pos = get_render_pos(food.grid_x, food.grid_y)
+    #         self.screen.blit(get_scaled_image(image_food, food.get_pixel_food_size()),  (render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
+    #                                                  render_pos[1] + map_block_tiles.get_height()/4 + scroll.y))
 
         
     # bob reproduces when the energy>=200                                                

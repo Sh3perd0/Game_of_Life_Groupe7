@@ -27,10 +27,6 @@ class EntityActivity :
             for key in keys_to_remove:
                 if key in self.dict_food:
                     del self.dict_food[key]
-
-    # def bob_eat_bob(self):
-    #     for bob1 in self.list_bob:
-    #         for bob2 in self.list_bob:
                 
     def reproduce(self):
         # Implement logic for reproduction
