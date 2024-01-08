@@ -25,27 +25,27 @@ class Cell:
 
         return out
 
-    @staticmethod
-    def get_assets_img():
-        tile = pygame.image.load(
-            os.path.abspath(
-                os.path.join(os.path.dirname(__file__), "..", "assets", "grass.png")
-            )
-        ).convert_alpha()
+    # @staticmethod
+    # def get_assets_img():
+    #     tile = pygame.image.load(
+    #         os.path.abspath(
+    #             os.path.join(os.path.dirname(__file__), "..", "assets", "grass.png")
+    #         )
+    #     ).convert_alpha()
 
-        return tile
+    #     return tile
 
     # @staticmethod
     def get_pixel_cells_size():
         return 321 / 8, 161 / 8
 
-    # Transform the size of block's asset as standard
-    @staticmethod
-    def get_scaled_blocks(
-        width_pixel_size=None, height_pixel_size=None
-    ):  # pragma: no cover
-        if width_pixel_size is None or height_pixel_size is None:
-            width_pixel_size, height_pixel_size = Cell.get_pixel_cells_size()
-        return pygame.transform.smoothscale(
-            Cell.get_assets_img(), (width_pixel_size, height_pixel_size)
-        ).convert_alpha()
+    # # Transform the size of block's asset as standard
+    # @staticmethod
+    # def get_scaled_blocks(
+    #     width_pixel_size=None, height_pixel_size=None
+    # ):  # pragma: no cover
+    #     if width_pixel_size is None or height_pixel_size is None:
+    #         width_pixel_size, height_pixel_size = Cell.get_pixel_cells_size()
+    #     return pygame.transform.smoothscale(
+    #         Cell.get_assets_img(), (width_pixel_size, height_pixel_size)
+    #     ).convert_alpha()

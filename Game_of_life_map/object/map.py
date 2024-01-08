@@ -1,7 +1,7 @@
 import pygame
 from .cell import Cell
 from constant.settings import *
-
+from .common import *
 
 class Map:
     # (grid_length_x, grid_length_y): number of cells each rows and columns
@@ -21,7 +21,7 @@ class Map:
         return (grid_length_x * CELL_SIZE * 4, grid_length_y * CELL_SIZE * 4)
 
     def render_map(self):
-        scaled_blocks = Cell.get_scaled_blocks()
+        scaled_blocks = get_scaled_image(get_assets_img(CELL_IMAGE), Cell.get_pixel_cells_size())
         map_dimensions = Map.get_map_dimensions(self.grid_length_x, self.grid_length_y)
         blit_world = pygame.Surface(map_dimensions).convert_alpha()
         blit_world.fill((0, 0, 0))

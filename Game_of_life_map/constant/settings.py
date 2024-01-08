@@ -10,3 +10,4 @@ FRAME_RATE = 60
 # Name_file_image
 BOB_IMAGE = "bob.png"
 FOOD_IMAGE = "apple.png"
+CELL_IMAGE = "grass.png"
