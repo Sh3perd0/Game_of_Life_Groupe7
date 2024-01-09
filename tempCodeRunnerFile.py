@@ -1,1 +1,1 @@
-draw_isometric_grid()
+0
