@@ -192,3 +192,6 @@ class Game:
 
     def update_perception(self):
         self.entity_activity.update_perception()
+
+    def bob_eat_bob(self):
+        self.entity_activity.bob_eat_bob()

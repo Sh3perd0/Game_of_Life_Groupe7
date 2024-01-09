@@ -86,7 +86,7 @@ class Bob(Entity):
                     # Move Bob
                     self.move(dx_direction, dy_direction)
         else:
-            self.energy -= 0.5
+            self.energy = max( 0, self.energy - 0.5)
 
         self.update_speed()
 
