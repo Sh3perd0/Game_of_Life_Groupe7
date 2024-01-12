@@ -9,19 +9,20 @@ from .common import *
 from entity.food import Food
 from entity.entity import Entity
 from logic_game.entity_activity import EntityActivity
+import pickle
+import codecs
 
 
 class Game:
     def __init__(self, screen, clock):
+        self.BOB_FONT = pygame.font.Font(None, 36)
         self.screen = screen
         self.clock = clock
         self.width, self.height = self.screen.get_size()
         self.camera = Camera(self.width, self.height)
         self.map = Map(screen, GRID_SIZE, GRID_SIZE)
         self.map.render_map()
-        self.list_bob = self.create_list_bob()
-        self.dict_food = self.create_dict_food()
-        self.entity_activity = EntityActivity(self.list_bob, self.dict_food)
+        self.entity_activity = EntityActivity()
         self.tick = 0
         self.day = 0
 
@@ -46,9 +47,24 @@ class Game:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    self.save()
+                if event.key == pygame.K_l:
+                    self.load()
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
+    
+    def load(self):
+         file = open('save.txt', 'rb')
+         s = file.read()
+         self.entity_activity = pickle.loads(codecs.decode(s,"base64"))
+
+    def save(self):
+        s = codecs.encode(pickle.dumps(self.entity_activity), "base64").decode()
+        file = open('save.txt', 'w')
+        file.write(s)
+        file.close()
 
     def update_render_tick(self):
         self.update_move_bob()
@@ -65,7 +81,7 @@ class Game:
             self.increment_day()
 
     def increment_day(self):
-        self.dict_food = self.create_dict_food().copy()
+        self.entity_activity.dict_food = self.entity_activity.create_dict_food().copy()
         self.day += 1
 
     def draw(self):
@@ -84,7 +100,7 @@ class Game:
 
         image_bob = get_assets_img(BOB_IMAGE)
 
-        for bob in self.list_bob:
+        for bob in self.entity_activity.list_bob :
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
             self.screen.blit(
                 get_scaled_image(image_bob, bob.get_pixel_bob_size()),
@@ -98,24 +114,9 @@ class Game:
             #                                       render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
             # self.screen.blit(energy_text, text_rect)
 
-    def create_list_bob(self):
-        return [Bob() for _ in range(NUMBER_BOB)]
-
+    
     def update_move_bob(self):
-        for bob in self.list_bob:
-            bob.move_towards_target()
-
-    def create_dict_food(self):
-        dict_food = {}
-        for _ in range(NUMBER_FOOD):
-            food = Food()
-            food.set_position()
-            position = (food.grid_x, food.grid_y)
-            if position in dict_food:
-                dict_food[position].energy += 100
-            else:
-                dict_food[position] = food
-        return dict_food
+       self.entity_activity.update_move_bob()
 
     # This version is for food with same size (faster)
     def draw_food(self):
@@ -125,9 +126,8 @@ class Game:
         image_food = get_assets_img(FOOD_IMAGE)
         scaled_food_image = get_scaled_image(image_food, Food.get_pixel_food_size())
 
-        for food in self.dict_food.values():
+        for food in self.entity_activity.dict_food.values():
             render_pos = get_render_pos(food.grid_x, food.grid_y)
-
             # Use the pre-rendered scaled food image
             self.screen.blit(
                 scaled_food_image,

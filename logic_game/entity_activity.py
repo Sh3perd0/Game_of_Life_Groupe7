@@ -6,15 +6,34 @@ from constant.settings import *
 
 
 class EntityActivity:
-    def __init__(self, list_bob, dict_food):
-        self.list_bob = list_bob
-        self.dict_food = dict_food
+    def __init__ (self):
+        self.list_bob = self.create_list_bob()
+        self.dict_food = self.create_dict_food()
 
     @staticmethod
     def check_collision(entity_1, entity_2):
         if entity_1.grid_x == entity_2.grid_x and entity_1.grid_y == entity_2.grid_y:
             return True
         return False
+    
+    def create_list_bob(self):
+        return [Bob() for _ in range(NUMBER_BOB)]
+    
+    def create_dict_food (self):
+        dict_food = {}
+        for _ in range (NUMBER_FOOD):
+            food = Food()
+            food.set_position()
+            position = (food.grid_x, food.grid_y)
+            if  position in dict_food:
+                dict_food[position].energy += 100
+            else:
+                dict_food[position] = food
+        return dict_food
+
+    def update_move_bob (self):
+        for bob in self.list_bob:
+            bob.move_towards_target()
 
     def bob_eat_food(self):
         keys_to_remove = []
