@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+from queue import PriorityQueue
 from .map import Map
 from camera.camera import Camera
 from constant.settings import *
@@ -19,7 +20,10 @@ class Game:
         self.camera = Camera(self.width, self.height)
         self.map = Map(screen, GRID_SIZE, GRID_SIZE)
         self.map.render_map()
-        self.list_bob = self.create_list_bob()
+        # since Bob's priority order of action depends on velocity 
+        # we use the data structure of priority queue  (velocity) to store the bob
+        # priority queue  : pq_bob
+        self.pq_bob = self.create_pq_bob()
         self.dict_food = self.create_dict_food()
         self.entity_activity = EntityActivity(self.list_bob, self.dict_food)
         self.tick = 0
@@ -60,7 +64,7 @@ class Game:
         self.update_perception()
 
         self.tick += 1
-        if self.tick == 100:
+        if self.tick == TICK:
             self.tick = 0
             self.increment_day()
 
@@ -98,8 +102,14 @@ class Game:
             #                                       render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
             # self.screen.blit(energy_text, text_rect)
 
-    def create_list_bob(self):
-        return [Bob() for _ in range(NUMBER_BOB)]
+
+
+    def create_pq_bob(self):
+        self.pq_bob = PriorityQueue()
+        for bob in self.pq_bob:
+            # Use a tuple with priority as the first element, and Bob as the second
+            # Higher values have higher priority
+            heapq.heappush(self.pq_bob, (-bob.priority, bob))
 
     def update_move_bob(self):
         for bob in self.list_bob:
@@ -112,7 +122,7 @@ class Game:
             food.set_position()
             position = (food.grid_x, food.grid_y)
             if position in dict_food:
-                dict_food[position].energy += 100
+                dict_food[position].energy += DEFAULT_ENERGY
             else:
                 dict_food[position] = food
         return dict_food
