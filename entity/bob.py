@@ -53,8 +53,14 @@ class Bob(Entity):
         self.speed_buffer = self.total_speed - int(self.total_speed)
 
     # the given bob is the prey
-    def is_enemy (self, bob):
+    def is_predator (self, bob):
         if self.mass > 3/2 * bob.mass:
+            return True
+        else:
+            return False
+        
+    def is_prey (self, bob):
+        if self.mass < 2/3 * bob.mass:
             return True
         else:
             return False

@@ -10,6 +10,8 @@ from .common import *
 from entity.food import Food
 from entity.entity import Entity
 from logic_game.entity_activity import EntityActivity
+import pickle
+import codecs
 
 
 class Game:
@@ -20,12 +22,7 @@ class Game:
         self.camera = Camera(self.width, self.height)
         self.map = Map(screen, GRID_SIZE, GRID_SIZE)
         self.map.render_map()
-        # since Bob's priority order of action depends on velocity 
-        # we use the data structure of priority queue  (velocity) to store the bob
-        # priority queue  : pq_bob
-        self.pq_bob = self.create_pq_bob()
-        self.dict_food = self.create_dict_food()
-        self.entity_activity = EntityActivity(self.list_bob, self.dict_food)
+        self.entity_activity = EntityActivity()
         self.tick = 0
         self.day = 0
 
@@ -39,6 +36,7 @@ class Game:
         # pygame.display.set_window_position(, )
         while self.playing:
             self.clock.tick(FRAME_RATE)
+            # self.clock.tick(10)
             self.events()
             self.camera.update()
             self.draw()
@@ -50,18 +48,32 @@ class Game:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    self.save()
+                if event.key == pygame.K_l:
+                    self.load()
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
+    
+    def load(self):
+         file = open('save.txt', 'rb')
+         s = file.read()
+         self.entity_activity = pickle.loads(codecs.decode(s,"base64"))
+
+    def save(self):
+        s = codecs.encode(pickle.dumps(self.entity_activity), "base64").decode()
+        file = open('save.txt', 'w')
+        file.write(s)
+        file.close()
 
     def update_render_tick(self):
         self.update_move_bob()
         self.eat_food()
+        self.bob_eat_prey()
         self.parthenogenesis_reproduce()
         self.sexual_reproduction()
         self.die()
-        self.set_new_target()
-        self.update_perception()
 
         self.tick += 1
         if self.tick == TICK:
@@ -69,7 +81,7 @@ class Game:
             self.increment_day()
 
     def increment_day(self):
-        self.dict_food = self.create_dict_food().copy()
+        self.entity_activity.dict_food = self.entity_activity.create_dict_food().copy()
         self.day += 1
 
     def draw(self):
@@ -87,8 +99,8 @@ class Game:
         scroll = self.camera.scroll
 
         image_bob = get_assets_img(BOB_IMAGE)
-
-        for bob in self.list_bob:
+        # scaled_bob_image = get_scaled_image(image_bob, bob.get_pixel_bob_size())
+        for bob in self.entity_activity.list_bob :
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
             self.screen.blit(
                 get_scaled_image(image_bob, bob.get_pixel_bob_size()),
@@ -97,35 +109,20 @@ class Game:
                     render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y,
                 ),
             )
-            # energy_text = bob.font.render(f'E: {bob.energy}, P: {bob.perception}, T: {bob.target}, IV: {bob.speed}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
+
+            # self.screen.blit(
+            #     scaled_bob_image,
+            #     (
+            #         render_pos[0] + map_block_tiles.get_width() / 2 + scroll.x,
+            #         render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y,
+            #     ),
+            # )
+
+            # energy_text = bob.font.render(f'E: {bob.energy: .2f}, P: {bob.perception}, T: {bob.target}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
             # text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
             #                                       render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
             # self.screen.blit(energy_text, text_rect)
 
-
-
-    def create_pq_bob(self):
-        self.pq_bob = PriorityQueue()
-        for bob in self.pq_bob:
-            # Use a tuple with priority as the first element, and Bob as the second
-            # Higher values have higher priority
-            heapq.heappush(self.pq_bob, (-bob.priority, bob))
-
-    def update_move_bob(self):
-        for bob in self.list_bob:
-            bob.move_towards_target()
-
-    def create_dict_food(self):
-        dict_food = {}
-        for _ in range(NUMBER_FOOD):
-            food = Food()
-            food.set_position()
-            position = (food.grid_x, food.grid_y)
-            if position in dict_food:
-                dict_food[position].energy += DEFAULT_ENERGY
-            else:
-                dict_food[position] = food
-        return dict_food
 
     # This version is for food with same size (faster)
     def draw_food(self):
@@ -135,9 +132,8 @@ class Game:
         image_food = get_assets_img(FOOD_IMAGE)
         scaled_food_image = get_scaled_image(image_food, Food.get_pixel_food_size())
 
-        for food in self.dict_food.values():
+        for food in self.entity_activity.dict_food.values():
             render_pos = get_render_pos(food.grid_x, food.grid_y)
-
             # Use the pre-rendered scaled food image
             self.screen.blit(
                 scaled_food_image,
@@ -197,11 +193,8 @@ class Game:
     def die(self):
         self.entity_activity.bob_die()
 
-    def set_new_target(self):
-        self.entity_activity.set_new_target()
+    def bob_eat_prey(self):
+        self.entity_activity.bob_eat_prey()
 
-    def update_perception(self):
-        self.entity_activity.update_perception()
-
-    def bob_eat_bob(self):
-        self.entity_activity.bob_eat_bob()
+    def update_move_bob(self):
+       self.entity_activity.move_towards_target()
