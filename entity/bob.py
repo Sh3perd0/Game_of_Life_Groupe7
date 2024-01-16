@@ -7,7 +7,7 @@ from entity.entity import Entity
 
 
 class Bob(Entity):
-    def __init__(self, speed=1, energy=100, perception=0, mass=1):
+    def __init__(self, speed=DEFAULT_SPEED, energy=DEFAULT_ENERGY, perception=DEFAULT_PERCEPTION, mass=DEFAULT_MASS):
         super().__init__(energy)
         self.set_initial_position()
         self.speed = speed
@@ -31,7 +31,7 @@ class Bob(Entity):
     def set_perception(self, perception):
         self.perception = perception
 
-    def set_energy(self, energy=100):
+    def set_energy(self, energy=DEFAULT_ENERGY):
         self.energy = energy
 
     def set_initial_position(self):
@@ -52,43 +52,55 @@ class Bob(Entity):
         self.total_speed = self.speed + self.speed_buffer
         self.speed_buffer = self.total_speed - int(self.total_speed)
 
-    def move_towards_target(self):
-        # Calculate the difference between Bob's position and the target position
-        dx = self.target[0] - self.grid_x
-        dy = self.target[1] - self.grid_y
-
-        if dx != 0 or dy != 0:
-            self.energy = max(
-                0,
-                self.energy - ((self.speed**2) * self.mass + 1 / 5 * self.perception),
-            )
-
-            # Adjust Bob's position based on speed
-            for _ in range(int(self.total_speed)):
-                dx_direction = 0
-                dy_direction = 0
-
-                if dx != 0 or dy != 0:
-                    if dx == 0:
-                        dy_direction = 1 if dy > 0 else -1
-                    elif dy == 0:
-                        dx_direction = 1 if dx > 0 else -1
-                    else:
-                        dir = random.randint(0, 1)
-                        if dir == 0:
-                            dx_direction = 1 if dx > 0 else -1
-                        else:
-                            dy_direction = 1 if dy > 0 else -1
-
-                    dx -= dx_direction
-                    dy -= dy_direction
-
-                    # Move Bob
-                    self.move(dx_direction, dy_direction)
+    # the given bob is the prey
+    def is_predator (self, bob):
+        if self.mass > 3/2 * bob.mass:
+            return True
         else:
-            self.energy = max( 0, self.energy - 0.5)
+            return False
+        
+    def is_prey (self, bob):
+        if self.mass < 2/3 * bob.mass:
+            return True
+        else:
+            return False
+    # def move_towards_target(self):
+    #     # Calculate the difference between Bob's position and the target position
+    #     dx = self.target[0] - self.grid_x
+    #     dy = self.target[1] - self.grid_y
 
-        self.update_speed()
+    #     if dx != 0 or dy != 0:
+    #         self.energy = max(
+    #             0,
+    #             self.energy - ((self.speed**2) * self.mass + 1 / 5 * self.perception)
+    #         )
+
+    #         # Adjust Bob's position based on speed
+    #         for _ in range(int(self.total_speed)):
+    #             dx_direction = 0
+    #             dy_direction = 0
+
+    #             if dx != 0 or dy != 0:
+    #                 if dx == 0:
+    #                     dy_direction = 1 if dy > 0 else -1
+    #                 elif dy == 0:
+    #                     dx_direction = 1 if dx > 0 else -1
+    #                 else:
+    #                     dir = random.randint(0, 1)
+    #                     if dir == 0:
+    #                         dx_direction = 1 if dx > 0 else -1
+    #                     else:
+    #                         dy_direction = 1 if dy > 0 else -1
+
+    #                 dx -= dx_direction
+    #                 dy -= dy_direction
+
+    #                 # Move Bob
+    #                 self.move(dx_direction, dy_direction)
+    #     else:
+    #         self.energy = max( 0, self.energy - 0.5)
+
+    #     self.update_speed()
 
     # @staticmethod
     # def get_assets_img():

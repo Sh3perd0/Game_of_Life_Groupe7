@@ -10,8 +10,8 @@ class Food(Entity):
     def __init__(self):
         super().__init__()
 
-    def set_energy(self, energy=100):
-        self.energy = 100
+    def set_energy(self, energy=DEFAULT_ENERGY):
+        self.energy = energy
 
     def set_position(self):
         self.grid_x = random.randint(0, GRID_SIZE - 1)

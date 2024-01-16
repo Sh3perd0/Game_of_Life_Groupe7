@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+from queue import PriorityQueue
 from .map import Map
 from camera.camera import Camera
 from constant.settings import *
@@ -15,7 +16,6 @@ import codecs
 
 class Game:
     def __init__(self, screen, clock):
-        self.BOB_FONT = pygame.font.Font(None, 36)
         self.screen = screen
         self.clock = clock
         self.width, self.height = self.screen.get_size()
@@ -36,6 +36,7 @@ class Game:
         # pygame.display.set_window_position(, )
         while self.playing:
             self.clock.tick(FRAME_RATE)
+            # self.clock.tick(10)
             self.events()
             self.camera.update()
             self.draw()
@@ -69,14 +70,13 @@ class Game:
     def update_render_tick(self):
         self.update_move_bob()
         self.eat_food()
+        self.bob_eat_prey()
         self.parthenogenesis_reproduce()
         self.sexual_reproduction()
         self.die()
-        self.set_new_target()
-        self.update_perception()
 
         self.tick += 1
-        if self.tick == 100:
+        if self.tick == TICK:
             self.tick = 0
             self.increment_day()
 
@@ -99,7 +99,7 @@ class Game:
         scroll = self.camera.scroll
 
         image_bob = get_assets_img(BOB_IMAGE)
-
+        # scaled_bob_image = get_scaled_image(image_bob, bob.get_pixel_bob_size())
         for bob in self.entity_activity.list_bob :
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
             self.screen.blit(
@@ -109,14 +109,20 @@ class Game:
                     render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y,
                 ),
             )
-            # energy_text = bob.font.render(f'E: {bob.energy}, P: {bob.perception}, T: {bob.target}, IV: {bob.speed}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
+
+            # self.screen.blit(
+            #     scaled_bob_image,
+            #     (
+            #         render_pos[0] + map_block_tiles.get_width() / 2 + scroll.x,
+            #         render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y,
+            #     ),
+            # )
+
+            # energy_text = bob.font.render(f'E: {bob.energy: .2f}, P: {bob.perception}, T: {bob.target}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
             # text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
             #                                       render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
             # self.screen.blit(energy_text, text_rect)
 
-    
-    def update_move_bob(self):
-       self.entity_activity.update_move_bob()
 
     # This version is for food with same size (faster)
     def draw_food(self):
@@ -187,11 +193,8 @@ class Game:
     def die(self):
         self.entity_activity.bob_die()
 
-    def set_new_target(self):
-        self.entity_activity.set_new_target()
+    def bob_eat_prey(self):
+        self.entity_activity.bob_eat_prey()
 
-    def update_perception(self):
-        self.entity_activity.update_perception()
-
-    def bob_eat_bob(self):
-        self.entity_activity.bob_eat_bob()
+    def update_move_bob(self):
+       self.entity_activity.move_towards_target()
