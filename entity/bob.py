@@ -64,60 +64,13 @@ class Bob(Entity):
             return True
         else:
             return False
-    # def move_towards_target(self):
-    #     # Calculate the difference between Bob's position and the target position
-    #     dx = self.target[0] - self.grid_x
-    #     dy = self.target[1] - self.grid_y
 
-    #     if dx != 0 or dy != 0:
-    #         self.energy = max(
-    #             0,
-    #             self.energy - ((self.speed**2) * self.mass + 1 / 5 * self.perception)
-    #         )
-
-    #         # Adjust Bob's position based on speed
-    #         for _ in range(int(self.total_speed)):
-    #             dx_direction = 0
-    #             dy_direction = 0
-
-    #             if dx != 0 or dy != 0:
-    #                 if dx == 0:
-    #                     dy_direction = 1 if dy > 0 else -1
-    #                 elif dy == 0:
-    #                     dx_direction = 1 if dx > 0 else -1
-    #                 else:
-    #                     dir = random.randint(0, 1)
-    #                     if dir == 0:
-    #                         dx_direction = 1 if dx > 0 else -1
-    #                     else:
-    #                         dy_direction = 1 if dy > 0 else -1
-
-    #                 dx -= dx_direction
-    #                 dy -= dy_direction
-
-    #                 # Move Bob
-    #                 self.move(dx_direction, dy_direction)
-    #     else:
-    #         self.energy = max( 0, self.energy - 0.5)
-
-    #     self.update_speed()
-
-    # @staticmethod
-    # def get_assets_img():
-
-    #     tile = pygame.image.load (
-    #             os.path.abspath(
-    #                 os.path.join(os.path.dirname(__file__), "..", "assets", "Bob.png")
-    #             )).convert_alpha()
-
-    #     return tile
-
+    # def get_pixel_bob_size(self):
+    #     return 321 / 8 * self.volume, 25 / 2 * self.volume
+    
     def get_pixel_bob_size(self):
-        return 321 / 8 * self.volume, 25 / 2 * self.volume
+        return 321 / 8 * self.mass, 25 / 2 * self.mass
+    
 
-    # def get_scaled_bob(self,
-    #     width_pixel_size=None, height_pixel_size=None
-    # ):  # pragma: no cover
-    #     if width_pixel_size is None or height_pixel_size is None:
-    #         width_pixel_size, height_pixel_size = self.get_pixel_bob_size()
-    #     return pygame.transform.smoothscale(self.get_assets_img(),(width_pixel_size, height_pixel_size)).convert_alpha()
+
+

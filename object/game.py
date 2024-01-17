@@ -22,7 +22,7 @@ class Game:
         self.camera = Camera(self.width, self.height)
         self.map = Map(screen, GRID_SIZE, GRID_SIZE)
         self.map.render_map()
-        self.entity_activity = EntityActivity()
+        self.entity_activity = EntityActivity(self.map)
         self.tick = 0
         self.day = 0
 
@@ -81,7 +81,7 @@ class Game:
             self.increment_day()
 
     def increment_day(self):
-        self.entity_activity.dict_food = self.entity_activity.create_dict_food().copy()
+        self.entity_activity.create_dict_food()
         self.day += 1
 
     def draw(self):
@@ -109,14 +109,6 @@ class Game:
                     render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y,
                 ),
             )
-
-            # self.screen.blit(
-            #     scaled_bob_image,
-            #     (
-            #         render_pos[0] + map_block_tiles.get_width() / 2 + scroll.x,
-            #         render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y,
-            #     ),
-            # )
 
             # energy_text = bob.font.render(f'E: {bob.energy: .2f}, P: {bob.perception}, T: {bob.target}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
             # text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,

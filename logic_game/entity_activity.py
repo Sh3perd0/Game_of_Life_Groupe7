@@ -4,14 +4,18 @@ import random
 import pygame
 import bisect
 from constant.settings import *
-
+from object.map import Map
 
 class EntityActivity:
-    def __init__ (self):
+    def __init__ (self, map):
+        self.map = map
         # since Bob's priority order of action depends on spped
         # we need to sort the list according to speed
-        self.list_bob = self.create_list_bob()
-        self.dict_food = self.create_dict_food()
+        self.list_bob = []
+        self.create_list_bob()
+        self.dict_food = []
+        self.create_dict_food()
+        
 
     @staticmethod
     def check_collision(entity_1, entity_2):
@@ -19,22 +23,30 @@ class EntityActivity:
             return True
         return False
     
+    # After a day: reset all the cell as not occupied by food
+    def reset_occupied_by_food(self):
+        if self.dict_food:
+            for food in self.dict_food.values():
+                self.map.map_dict[(food.grid_x, food.grid_y)].occupied_by_food = False
+
     def create_list_bob(self):
         list_bob = [Bob() for _ in range(NUMBER_BOB)]
         # Sort the list in descending order by bob.speed
-        return sorted(list_bob, key=lambda bob: bob.speed, reverse=True)
+        self.list_bob = sorted(list_bob, key=lambda bob: bob.speed, reverse=True)
     
     def create_dict_food (self):
+        self.reset_occupied_by_food()
         dict_food = {}
         for _ in range (NUMBER_FOOD):
             food = Food()
             food.set_position()
             position = (food.grid_x, food.grid_y)
+            self.map.map_dict[position].occupied_by_food = True
             if  position in dict_food:
                 dict_food[position].energy += 100
             else:
                 dict_food[position] = food
-        return dict_food
+        self.dict_food = dict_food.copy()
 
     
     # append bob to list_bob in order
@@ -69,7 +81,7 @@ class EntityActivity:
                 baby = Bob(speed=speed, energy= NEW_ENERGY_PARTH_REPRODUCE, perception=perception, mass=mass)
                 baby.set_position(bob.grid_x, bob.grid_y)
                 self.append_bob_to_list(baby)
-                print(f"Baby born SINGLE with perception = {baby.perception}")
+                # print(f"Baby born SINGLE with perception = {baby.perception}")
         
 
     def sexual_reproduction(self):
@@ -97,18 +109,20 @@ class EntityActivity:
         # Implement logic for Bob dying:
         for bob in self.list_bob:
             if bob.energy <= 0:
-                print(f"Bob is dead at energy = {bob.energy}")
+                # print(f"Bob is dead at energy = {bob.energy}")
                 self.list_bob.remove(bob)
                 
                 
     def bob_eat_prey(self):
         for bob in self.list_bob:
             for prey in self.list_bob:
-                if bob.is_predator(prey) and bob != prey:
+                if EntityActivity.check_collision(bob, prey) and bob.is_predator(prey)  and bob != prey:
+                    print ("Bob eat prey")
                     bob.energy += 1 / 2 * prey.energy * (
                         1 - prey.mass / bob.mass
                     )
                     prey.energy = 0
+                    
     
     
     def vision_area (self, bob):
@@ -183,7 +197,7 @@ class EntityActivity:
     
     #move_towards_target
     def move_towards_target(self):
-        for bob in self.list_bob:
+        for i, bob in enumerate(self.list_bob):
             
             # Calculate the difference between Bob's position and the target position
             dx = bob.target[0] - bob.grid_x
@@ -220,8 +234,22 @@ class EntityActivity:
 
                         # Move Bob
                         bob.move(dx_direction, dy_direction)
-                        
+
                         self.set_new_target()
+                        
+                        outer_loop_break = False
+
+                        # Check if Bob meets food at the new position
+                        if self.map.map_dict[(bob.grid_x, bob.grid_y)].occupied_by_food:
+                            outer_loop_break = True
+                        # Check if Bob meets prey at the new position
+                        for other_bob in self.list_bob[i+1:]:
+                            if EntityActivity.check_collision(bob, other_bob) and bob.is_predator(other_bob) and bob != other_bob:
+                                outer_loop_break = True
+                                break
+                        if outer_loop_break:
+                            break
+                        
             else:
                 bob.energy = max( 0, bob.energy - 0.5)
                 self.set_new_target()
