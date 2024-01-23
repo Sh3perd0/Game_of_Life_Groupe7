@@ -72,13 +72,15 @@ class EntityActivity:
                 bob.energy = NEW_ENERGY_PARTH_REPRODUCE
                 speed = max(0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1))))
                 mass = max(0, round((random.uniform(bob.mass - 0.1, bob.mass + 0.1))))
+                memory = max(0, (bob.memory + random.randint(-1,1)))
+
                 perception = bob.perception
                 if perception > 0:
                     rand_num = random.randint(-1, 1)
                     perception += rand_num
                 elif perception <= 0:
                     perception += random.choice([0, 1])
-                baby = Bob(speed=speed, energy= NEW_ENERGY_PARTH_REPRODUCE, perception=perception, mass=mass)
+                baby = Bob(speed=speed, energy= NEW_ENERGY_PARTH_REPRODUCE, perception=perception, mass=mass, memory=memory)
                 baby.set_position(bob.grid_x, bob.grid_y)
                 self.append_bob_to_list(baby)
                 # print(f"Baby born SINGLE with perception = {baby.perception}")
@@ -99,6 +101,7 @@ class EntityActivity:
                                 energy=NEW_ENERGY_SEXUAL_REPRODUCE,
                                 perception=(bob1.perception + bob2.perception) / 2,
                                 mass=(bob1.mass + bob2.mass) / 2,
+                                memory=int((bob1.memory + bob2.memory)/2)
                             )
                             baby.set_position(bob1.grid_x, bob1.grid_y)
                             print(f"Baby born SEXUAL with perception = {baby.perception}")
@@ -267,13 +270,19 @@ class EntityActivity:
             target = None
             food_target = self.find_food(self.vision_area(bob), bob)
             prey_target = self.find_prey(self.vision_area(bob), bob)
-            predator_target = self.find_predator(self.vision_area(bob),bob) 
+            predator_target = self.find_predator(self.vision_area(bob),bob)
             
+            foods_to_remember = [f for f in self.dict_food.values() if (f!= food_target and bob.distance_to(f) <=  int(bob.perception))]
+            bob.forget_food(food_target)
+            bob.remember_food(foods_to_remember)
+
             if not predator_target:
                 if food_target:
                     target = pygame.Vector2(food_target.grid_x, food_target.grid_y)
                 elif prey_target:
                     target = pygame.Vector2(prey_target.grid_x, prey_target.grid_y)
+                else:
+                    target = bob.target_from_memory()    
             else:
                 pass
             
