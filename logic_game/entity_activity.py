@@ -242,10 +242,12 @@ class EntityActivity:
                         # Check if Bob meets food at the new position
                         if self.map.map_dict[(bob.grid_x, bob.grid_y)].occupied_by_food:
                             outer_loop_break = True
+                            print (f"Bob with current speed = {bob.total_speed} eat food and stop moving")
                         # Check if Bob meets prey at the new position
                         for other_bob in self.list_bob[i+1:]:
                             if EntityActivity.check_collision(bob, other_bob) and bob.is_predator(other_bob) and bob != other_bob:
                                 outer_loop_break = True
+                                print(f"Bob with current speed = {bob.total_speed} eat prey and stop moving")
                                 break
                         if outer_loop_break:
                             break
