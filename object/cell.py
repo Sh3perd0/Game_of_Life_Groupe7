@@ -8,7 +8,6 @@ class Cell:
     def __init__(self, grid_x, grid_y):
         self.iso_poly = self.create_cell(grid_x, grid_y)["iso_poly"]
         self.render_pos = self.create_cell(grid_x, grid_y)["render_pos"]
-        self.occupied_by_food = False
 
     def create_cell(self, grid_x, grid_y):
         rect = get_cart_rect_pos(grid_x, grid_y)

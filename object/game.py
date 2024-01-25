@@ -22,7 +22,7 @@ class Game:
         self.camera = Camera(self.width, self.height)
         self.map = Map(screen, GRID_SIZE, GRID_SIZE)
         self.map.render_map()
-        self.entity_activity = EntityActivity(self.map)
+        self.entity_activity = EntityActivity()
         self.tick = 0
         self.day = 0
 
@@ -35,8 +35,8 @@ class Game:
         self.playing = True
         # pygame.display.set_window_position(, )
         while self.playing:
-            self.clock.tick(FRAME_RATE)
-            # self.clock.tick(10)
+            # self.clock.tick(FRAME_RATE)
+            self.clock.tick(1)
             self.events()
             self.camera.update()
             self.draw()
@@ -109,10 +109,11 @@ class Game:
                 ),
             )
 
-            # energy_text = bob.font.render(f'E: {bob.energy: .2f}, P: {bob.perception}, T: {bob.target}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
-            # text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
-            #                                       render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
-            # self.screen.blit(energy_text, text_rect)
+            energy_text = bob.font.render(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}', True, (255, 255, 255))
+            text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
+                                                  render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
+            self.screen.blit(energy_text, text_rect)
+            # print(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}')
 
 
     # This version is for food with same size (faster)
@@ -122,6 +123,7 @@ class Game:
 
         image_food = get_assets_img(FOOD_IMAGE)
         scaled_food_image = get_scaled_image(image_food, Food.get_pixel_food_size())
+
 
         for food in self.entity_activity.dict_food.values():
             render_pos = get_render_pos(food.grid_x, food.grid_y)

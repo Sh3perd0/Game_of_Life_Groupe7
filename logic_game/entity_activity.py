@@ -4,11 +4,9 @@ import random
 import pygame
 import bisect
 from constant.settings import *
-from object.map import Map
 
 class EntityActivity:
-    def __init__ (self, map):
-        self.map = map
+    def __init__ (self):
         # since Bob's priority order of action depends on spped
         # we need to sort the list according to speed
         self.list_bob = []
@@ -23,11 +21,6 @@ class EntityActivity:
             return True
         return False
     
-    # After a day: reset all the cell as not occupied by food
-    def reset_occupied_by_food(self):
-        if self.dict_food:
-            for food in self.dict_food.values():
-                self.map.map_dict[(food.grid_x, food.grid_y)].occupied_by_food = False
 
     def create_list_bob(self):
         list_bob = [Bob() for _ in range(NUMBER_BOB)]
@@ -35,13 +28,11 @@ class EntityActivity:
         self.list_bob = sorted(list_bob, key=lambda bob: bob.speed, reverse=True)
     
     def create_dict_food (self):
-        self.reset_occupied_by_food()
         dict_food = {}
         for _ in range (NUMBER_FOOD):
             food = Food()
             food.set_position()
             position = (food.grid_x, food.grid_y)
-            self.map.map_dict[position].occupied_by_food = True
             if  position in dict_food:
                 dict_food[position].energy += 100
             else:
@@ -183,6 +174,14 @@ class EntityActivity:
         for food in self.dict_food.values():
             if (food.grid_x, food.grid_y) in area:
                 distance = bob.distance_to(food)
+                # Here: when bob is in the same position with food, distance = 0
+                # since the function find_food is called before eat_food
+                # so he set this current food as food_target and then new_target = food_target
+                # so after eating this food in the next tick he will station at this position 
+                # So we add 2 lines of code below to avoid this situation
+                if distance == 0:
+                    continue
+
                 if distance <= bob.perception:
                     # Free food in memory
                     bob.forget_food(food)
@@ -224,7 +223,7 @@ class EntityActivity:
             if dx != 0 or dy != 0:
                 bob.energy = max(
                     0,
-                    bob.energy - ((bob.speed**2) * bob.mass + 1 / 5 * bob.perception),
+                    bob.energy - ((bob.speed**2) * bob.mass + 1 / 5 * bob.perception + 1 / 5 * bob.memory),
                 )
 
                 # Adjust Bob's position based on speed
@@ -255,22 +254,28 @@ class EntityActivity:
 
                         self.set_new_target()
                         
-                        outer_loop_break = False
+                        # print(f"{(bob.grid_x, bob.grid_y)} move to {bob.target}")
 
                         # Check if Bob meets food at the new position
-                        if self.map.map_dict[(bob.grid_x, bob.grid_y)].occupied_by_food:
-                            outer_loop_break = True
+                        if self.dict_food.get((bob.grid_x, bob.grid_y)):
+                            # print(f"Bob found food at {(bob.grid_x, bob.grid_y)}")
+                            break
+
+                        outer_loop = False
                         # Check if Bob meets prey at the new position
                         for other_bob in self.list_bob[i+1:]:
                             if EntityActivity.check_collision(bob, other_bob) and bob.is_predator(other_bob) and bob != other_bob:
-                                outer_loop_break = True
+                                outer_loop = True
                                 break
-                        if outer_loop_break:
+                        if outer_loop:
                             break
-                        
+                    # else:
+                    #     print("station")
+             
             else:
                 bob.energy = max( 0, bob.energy - 0.5)
                 self.set_new_target()
+                # print ("station")
 
             bob.update_speed()
 
@@ -288,7 +293,7 @@ class EntityActivity:
             foods_to_remember = [
                 f
                 for f in self.dict_food.values()
-                if (f != food_target and bob.distance_to(f) <= int(bob.perception))
+                if (f != food_target and bob.distance_to(f) <= bob.perception)
             ]
             bob.remember_food(foods_to_remember)
             bob.forget_food(food_target)
@@ -317,6 +322,7 @@ class EntityActivity:
                         area.append((x, y))
 
                 target = random((x, y) in area)
+
             if target is not None:
                 bob.target = pygame.Vector2(target[0], target[1])
             else:
@@ -329,4 +335,6 @@ class EntityActivity:
                         max(0, bob.grid_y - 1), min(bob.grid_y + 1, GRID_SIZE - 1)
                     ),
                 )
-                # print (bob.target)
+                # print (f"Random target {bob.target}")
+            # print (food_target)
+            # print (prey_target)
