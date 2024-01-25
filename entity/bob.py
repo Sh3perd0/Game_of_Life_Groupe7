@@ -7,7 +7,7 @@ from entity.entity import Entity
 
 
 class Bob(Entity):
-    def __init__(self, speed=DEFAULT_SPEED, energy=DEFAULT_ENERGY, perception=DEFAULT_PERCEPTION, mass=DEFAULT_MASS, memory=DEFAULT_MEMORY):
+    def __init__(self, speed=DEFAULT_SPEED, energy=DEFAULT_ENERGY, perception=DEFAULT_PERCEPTION, true_perception=DEFAULT_PERCEPTION, mass=DEFAULT_MASS, memory=DEFAULT_MEMORY):
         super().__init__(energy)
         self.set_initial_position()
         self.speed = speed
@@ -17,6 +17,7 @@ class Bob(Entity):
             random.randint(0, GRID_SIZE - 1),
         )
         self.perception = perception
+        self.true_perception = true_perception
         self.mass = mass
         self.volume = self.mass ** (1 / 3)
         self.speed_buffer = float(self.total_speed - int(self.total_speed))
@@ -34,6 +35,9 @@ class Bob(Entity):
     def set_perception(self, perception):
         self.perception = perception
 
+    def set_true_perception(self, true_perception):
+        self.true_perception = true_perception
+        
     def set_energy(self, energy=DEFAULT_ENERGY):
         self.energy = energy
 
@@ -51,14 +55,14 @@ class Bob(Entity):
     def remember_food(self, foods):
         self.food_memory = list(set(self.food_memory + foods))
         self.food_memory.sort(key=lambda f: (self.distance_to(f), f.energy))
-        self.food_memory = self.food_memory[:self.memory]
+        self.food_memory = self.food_memory[:(self.memory)]
 
     def target_from_memory(self):
         if(self.food_memory):
             food = self.food_memory.pop(0)
             if(food.grid_x != self.grid_x or food.grid_y != self.grid_y):
                 return pygame.Vector2(food.grid_x, food.grid_y)
-
+            
     def distance_to(self, entity):
         return abs(entity.grid_x - self.grid_x) + abs(entity.grid_y - self.grid_y)    
 
@@ -89,12 +93,6 @@ class Bob(Entity):
         else:
             return False
 
-    # def get_pixel_bob_size(self):
-    #     return 321 / 8 * self.volume, 25 / 2 * self.volume
-    
+
     def get_pixel_bob_size(self):
-        return 321 / 8 * self.mass, 25 / 2 * self.mass
-    
-
-
-
+        return 321 / 8 * self.volume, 25 / 2 * self.volume

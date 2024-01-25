@@ -4,87 +4,68 @@ import random
 import pygame
 import bisect
 from constant.settings import *
-from object.map import Map
+
 
 class EntityActivity:
-    def __init__ (self, map):
-        self.map = map
+    def _init_(self):
         # since Bob's priority order of action depends on spped
         # we need to sort the list according to speed
-        self.list_bob = []
-        self.create_list_bob()
-        self.dict_food = []
-        self.create_dict_food()
-        
+        self.list_bob = self.create_list_bob()
+        self.dict_food = self.create_dict_food()
 
     @staticmethod
     def check_collision(entity_1, entity_2):
         if entity_1.grid_x == entity_2.grid_x and entity_1.grid_y == entity_2.grid_y:
             return True
         return False
-    
-    # After a day: reset all the cell as not occupied by food
-    def reset_occupied_by_food(self):
-        if self.dict_food:
-            for food in self.dict_food.values():
-                self.map.map_dict[(food.grid_x, food.grid_y)].occupied_by_food = False
 
     def create_list_bob(self):
         list_bob = [Bob() for _ in range(NUMBER_BOB)]
         # Sort the list in descending order by bob.speed
-        self.list_bob = sorted(list_bob, key=lambda bob: bob.speed, reverse=True)
-    
-    def create_dict_food (self):
-        self.reset_occupied_by_food()
+        return sorted(list_bob, key=lambda bob: bob.speed, reverse=True)
+
+    def create_dict_food(self):
         dict_food = {}
-        for _ in range (NUMBER_FOOD):
+        for _ in range(NUMBER_FOOD):
             food = Food()
             food.set_position()
             position = (food.grid_x, food.grid_y)
-            self.map.map_dict[position].occupied_by_food = True
-            if  position in dict_food:
+            if position in dict_food:
                 dict_food[position].energy += 100
             else:
                 dict_food[position] = food
-        self.dict_food = dict_food.copy()
+        return dict_food
 
-    
     # append bob to list_bob in order
     def append_bob_to_list(self, bob):
         bisect.insort(self.list_bob, bob, key=lambda x: x.speed)
-
-    def bob_eat_food(self):
-        keys_to_remove = []
-        for bob in self.list_bob:
-            for grid, food in self.dict_food.items():
-                if EntityActivity.check_collision(bob, food):
-                    keys_to_remove.append(grid)
-                    bob.energy += min(food.energy, 200 - bob.energy)
-
-            for key in keys_to_remove:
-                if key in self.dict_food:
-                    del self.dict_food[key]
 
     # Implement logic for reproduction via parthenogenesis:
     def parthenogenesis_reproduce(self):
         for bob in self.list_bob:
             if bob.energy >= MAX_ENERGY:
                 bob.energy = NEW_ENERGY_PARTH_REPRODUCE
-                speed = max(0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1))))
+                speed = max(
+                    0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1)))
+                )
                 mass = max(0, round((random.uniform(bob.mass - 0.1, bob.mass + 0.1))))
-                memory = max(0, (bob.memory + random.randint(-1,1)))
-
+                memory = max(0, (bob.memory + random.randint(-1, 1)))
                 perception = bob.perception
                 if perception > 0:
                     rand_num = random.randint(-1, 1)
                     perception += rand_num
                 elif perception <= 0:
                     perception += random.choice([0, 1])
-                baby = Bob(speed=speed, energy= NEW_ENERGY_PARTH_REPRODUCE, perception=perception, mass=mass, memory=memory)
+                baby = Bob(
+                    speed=speed,
+                    energy=NEW_ENERGY_PARTH_REPRODUCE,
+                    perception=perception,
+                    mass=mass,
+                    memory=memory,
+                )
                 baby.set_position(bob.grid_x, bob.grid_y)
                 self.append_bob_to_list(baby)
-                # print(f"Baby born SINGLE with perception = {baby.perception}")
-        
+                print(f"Baby born SINGLE with perception = {baby.perception}")
 
     def sexual_reproduction(self):
         for bob1 in self.list_bob:
@@ -99,109 +80,123 @@ class EntityActivity:
                             baby = Bob(
                                 speed=(bob1.speed + bob2.speed) / 2,
                                 energy=NEW_ENERGY_SEXUAL_REPRODUCE,
-                                perception=(bob1.perception + bob2.perception) / 2,
+                                true_perception=(
+                                    bob1.true_perception + bob2.true_perception
+                                )
+                                / 2,
+                                perception=round(
+                                    (bob1.perception + bob2.perception) / 2
+                                ),
                                 mass=(bob1.mass + bob2.mass) / 2,
-                                memory=int((bob1.memory + bob2.memory)/2)
+                                memory=int((bob1.memory + bob2.memory) / 2),
                             )
                             baby.set_position(bob1.grid_x, bob1.grid_y)
-                            print(f"Baby born SEXUAL with perception = {baby.perception}")
+                            print(
+                                f"Baby born SEXUAL with perception = {baby.perception}"
+                            )
                             self.append_bob_to_list(baby)
-    
 
     def bob_die(self):
         # Implement logic for Bob dying:
         for bob in self.list_bob:
             if bob.energy <= 0:
-                # print(f"Bob is dead at energy = {bob.energy}")
+                print(f"Bob is dead at energy = {bob.energy}")
                 self.list_bob.remove(bob)
-                
-                
-    def bob_eat_prey(self):
+
+    # Bob eat food and prey
+    def bob_eat_food(self):
+        keys_to_remove = []
         for bob in self.list_bob:
-            for prey in self.list_bob:
-                if EntityActivity.check_collision(bob, prey) and bob.is_predator(prey)  and bob != prey:
-                    print ("Bob eat prey")
-                    bob.energy += 1 / 2 * prey.energy * (
-                        1 - prey.mass / bob.mass
-                    )
-                    prey.energy = 0
-                    
-    
-    
-    def vision_area (self, bob):
-        vision_area = (max(0, bob.grid_x - int(bob.perception)), 
-                      min(GRID_SIZE, bob.grid_x + int(bob.perception)), 
-                      max(0, bob.grid_y - int(bob.perception)), 
-                      min(GRID_SIZE, bob.grid_y + int(bob.perception)))
+            if self.dict_food.get((bob.grid_x, bob.grid_y)):
+                food = self.dict_food.get((bob.grid_x, bob.grid_y))
+                keys_to_remove.append((food.grid_x, food.grid_y))
+                bob.energy += min(food.energy, 200 - bob.energy)
+            else:
+                for prey in self.list_bob:
+                    if bob.is_predator(prey) and bob != prey:
+                        bob.energy += min(
+                            200, 1 / 2 * prey.energy * (1 - prey.mass / bob.mass)
+                        )
+                        prey.energy = 0
+            for key in keys_to_remove:
+                if key in self.dict_food:
+                    del self.dict_food[key]
+
+    # Set up vision area
+    def vision_area(self, bob):
+        vision_area = []
+        # Determine the range of left and right boundaries
+        min_x = max(0, bob.grid_x - bob.perception)
+        max_x = min(GRID_SIZE - 1, bob.grid_x + bob.perception)
+        # Determine the limit range of the upper and lower boundaries
+        min_y = max(0, bob.grid_y - bob.perception)
+        max_y = min(GRID_SIZE - 1, bob.grid_y + bob.perception)
+        # Loop through the coordinates within the bounded range and add them to vision_area
+        for x in range(min_x, max_x + 1):
+            for y in range(min_y, max_y + 1):
+                if abs(bob.grid_x - x) + abs(bob.grid_x - x) <= bob.perception:
+                    vision_area.append((x, y))
         return vision_area
-    
-    #Find prey
-    def find_prey(self,rectangle_corners, bob):
+
+    # Find prey
+    def find_prey(self, area, bob):
         # Extract coordinates of rectangle corners
-        x1, y1, x2, y2 = rectangle_corners
-        prey_target=None
-        min_distance = float('inf')
-        # Filter preys within the specified rectangle
-        preys_in_rectangle = (prey for prey in self.list_bob if (bob.is_predator(prey) and x1 <= prey.grid_x <= x2 and y1 <= prey.grid_y <= y2))
-        if not preys_in_rectangle:
-            return None  # No prey in the specified rectangle
-        for prey in preys_in_rectangle:
-            distance = abs(prey.grid_x - bob.grid_x) + abs(prey.grid_y - bob.grid_y)
+        prey_target = None
+        min_distance = float("inf")
 
-            if distance < bob.perception:
-                if distance < min_distance or (distance == min_distance and 
-                    prey.mass < prey_target.mass):
+        for prey in self.list_bob:
+            if (prey.grid_x, prey.grid_y) in area and bob.is_predator(prey):
+                distance = bob.distance_to(prey)
 
-                    min_distance = distance
-                    prey_target = prey
+                if distance < bob.perception:
+                    if distance < min_distance or (
+                        distance == min_distance and prey.mass < prey_target.mass
+                    ):
+                        min_distance = distance
+                        prey_target = prey
         return prey_target
 
     # Find food
-    def find_food(self, rectangle_corners, bob):
+    def find_food(self, area, bob):
         # Extract coordinates of rectangle corners
-        x1, y1, x2, y2 = rectangle_corners
-        min_distance = float('inf')
+        min_distance = float("inf")
         food_target = None
-        # Filter foods within the specified rectangle
-        foods_in_rectangle = (food for food in self.dict_food.values() if (x1 <= food.grid_x <= x2 and y1 <= food.grid_y <= y2))
-        if not foods_in_rectangle:
-            return None  # No food in the specified rectangle
-        for food in foods_in_rectangle:
-            distance = abs(food.grid_x - bob.grid_x) + abs(food.grid_y - bob.grid_y)
 
-            if distance <= int(bob.perception):
-                if distance < min_distance or (distance == min_distance and 
-                    food.energy > food_target.energy):
-                    
-                    min_distance = distance
-                    food_target = food
+        for food in self.dict_food.values():
+            if (food.grid_x, food.grid_y) in area:
+                distance = bob.distance_to(food)
+                if distance <= bob.perception:
+                    # Free food in memory
+                    bob.forget_food(food)
+                    if distance < min_distance or (
+                        distance == min_distance and food.energy > food_target.energy
+                    ):
+                        min_distance = distance
+                        food_target = food
         return food_target
 
     # Find predator
-    def find_predator(self, rectangle_corners, bob):
+    def find_predator(self, area, bob):
         # Extract coordinates of rectangle corners
-        x1, y1, x2, y2 = rectangle_corners
-        min_distance = float('inf')  # Initialize min_distance to infinity
-        predator_target = []
-        # Filter predators within the specified rectangle
-        predators_in_rectangle = [predator for predator in self.list_bob if (bob.is_prey(predator) and x1 <= predator.grid_x <= x2 and y1 <= predator.grid_y <= y2)]
-        if not predators_in_rectangle:
-            return None  # No predator in the specified rectangle
-        for predator in predators_in_rectangle:
-            distance = abs(predator.grid_x - bob.grid_x) + abs(predator.grid_y - bob.grid_y)
-            if distance <= int(bob.perception):
-                if distance < min_distance:
-                    min_distance = distance
-                    predator_target = [predator]  # Found a closer predator
-                elif distance == min_distance:
-                    predator_target.append(predator)  # Found another predator at the same minimum distance
+        min_distance = float("inf")  # Initialize min_distance to infinity
+        predator_target = None
+
+        for predator in self.list_bob:
+            if bob.is_prey(predator) and (predator.grid_x, predator.grid_y) in area:
+                distance = bob.distance_to(predator)
+                if distance <= bob.perception:
+                    if distance < min_distance:
+                        min_distance = distance
+                        predator_target = [predator]  # Found a closer predator
+                    elif distance == min_distance:
+                        predator_target.append(
+                            predator
+                        )  # Found another predator at the same minimum distance
         return predator_target
-    
-    
-    #move_towards_target
+
+    # move_towards_target
     def move_towards_target(self):
-        for i, bob in enumerate(self.list_bob):
-            
+        for bob in self.list_bob:
             # Calculate the difference between Bob's position and the target position
             dx = bob.target[0] - bob.grid_x
             dy = bob.target[1] - bob.grid_y
@@ -216,7 +211,7 @@ class EntityActivity:
                 for _ in range(int(bob.total_speed)):
                     dx = bob.target[0] - bob.grid_x
                     dy = bob.target[1] - bob.grid_y
-                    
+
                     dx_direction = 0
                     dy_direction = 0
 
@@ -239,42 +234,27 @@ class EntityActivity:
                         bob.move(dx_direction, dy_direction)
 
                         self.set_new_target()
-                        
-                        outer_loop_break = False
-
-                        # Check if Bob meets food at the new position
-                        if self.map.map_dict[(bob.grid_x, bob.grid_y)].occupied_by_food:
-                            outer_loop_break = True
-                            print (f"Bob with current speed = {bob.total_speed} eat food and stop moving")
-                        # Check if Bob meets prey at the new position
-                        for other_bob in self.list_bob[i+1:]:
-                            if EntityActivity.check_collision(bob, other_bob) and bob.is_predator(other_bob) and bob != other_bob:
-                                outer_loop_break = True
-                                print(f"Bob with current speed = {bob.total_speed} eat prey and stop moving")
-                                break
-                        if outer_loop_break:
-                            break
-                        
             else:
-                bob.energy = max( 0, bob.energy - 0.5)
+                bob.energy = max(0, bob.energy - 0.5)
                 self.set_new_target()
 
             bob.update_speed()
 
-
-        
-    
     # Set new target each unit of movement
     def set_new_target(self):
         for bob in self.list_bob:
             target = None
             food_target = self.find_food(self.vision_area(bob), bob)
             prey_target = self.find_prey(self.vision_area(bob), bob)
-            predator_target = self.find_predator(self.vision_area(bob),bob)
-            
-            foods_to_remember = [f for f in self.dict_food.values() if (f!= food_target and bob.distance_to(f) <=  int(bob.perception))]
-            bob.forget_food(food_target)
+            predator_target = self.find_predator(self.vision_area(bob), bob)
+
+            foods_to_remember = [
+                f
+                for f in self.dict_food.values()
+                if (f != food_target and bob.distance_to(f) <= int(bob.perception))
+            ]
             bob.remember_food(foods_to_remember)
+            bob.forget_food(food_target)
 
             if not predator_target:
                 if food_target:
@@ -282,15 +262,34 @@ class EntityActivity:
                 elif prey_target:
                     target = pygame.Vector2(prey_target.grid_x, prey_target.grid_y)
                 else:
-                    target = bob.target_from_memory()    
+                    target = bob.target_from_memory()
             else:
-                pass
-            
+                area = []
+
+                for x, y in self.vision_area(bob):
+                    cell_visible = True
+                    for bob_predator in predator_target:
+                        if (bob.grid_y - bob_predator.grid_y) * (
+                            bob.grid_y - y
+                        ) > 0 or (bob.grid_x - bob_predator.grid_x) * (
+                            bob.grid_x - x
+                        ) > 0:
+                            cell_visible = False
+                            break  # No need to check further if one predator is in this area
+                    if cell_visible:
+                        area.append((x, y))
+
+                target = random((x, y) in area)
             if target is not None:
                 bob.target = pygame.Vector2(target[0], target[1])
             else:
                 # bob.target = pygame.Vector2(random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1))
-                bob.target = pygame.Vector2(random.randint(max(0, bob.grid_x - 1), min(bob.grid_x + 1, GRID_SIZE - 1)), 
-                                                           random.randint(max(0, bob.grid_y - 1), min(bob.grid_y + 1, GRID_SIZE - 1)))
+                bob.target = pygame.Vector2(
+                    random.randint(
+                        max(0, bob.grid_x - 1), min(bob.grid_x + 1, GRID_SIZE - 1)
+                    ),
+                    random.randint(
+                        max(0, bob.grid_y - 1), min(bob.grid_y + 1, GRID_SIZE - 1)
+                    ),
+                )
                 # print (bob.target)
-            
