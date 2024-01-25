@@ -70,7 +70,6 @@ class Game:
     def update_render_tick(self):
         self.update_move_bob()
         self.eat_food()
-        self.bob_eat_prey()
         self.parthenogenesis_reproduce()
         self.sexual_reproduction()
         self.die()
@@ -184,9 +183,6 @@ class Game:
     # bob die : lost all of energy
     def die(self):
         self.entity_activity.bob_die()
-
-    def bob_eat_prey(self):
-        self.entity_activity.bob_eat_prey()
 
     def update_move_bob(self):
        self.entity_activity.move_towards_target()

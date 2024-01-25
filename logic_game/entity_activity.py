@@ -4,41 +4,55 @@ import random
 import pygame
 import bisect
 from constant.settings import *
-
+from object.map import Map
 
 class EntityActivity:
-    def _init_(self):
+    def __init__ (self, map):
+        self.map = map
         # since Bob's priority order of action depends on spped
         # we need to sort the list according to speed
-        self.list_bob = self.create_list_bob()
-        self.dict_food = self.create_dict_food()
+        self.list_bob = []
+        self.create_list_bob()
+        self.dict_food = []
+        self.create_dict_food()
+        
 
     @staticmethod
     def check_collision(entity_1, entity_2):
         if entity_1.grid_x == entity_2.grid_x and entity_1.grid_y == entity_2.grid_y:
             return True
         return False
+    
+    # After a day: reset all the cell as not occupied by food
+    def reset_occupied_by_food(self):
+        if self.dict_food:
+            for food in self.dict_food.values():
+                self.map.map_dict[(food.grid_x, food.grid_y)].occupied_by_food = False
 
     def create_list_bob(self):
         list_bob = [Bob() for _ in range(NUMBER_BOB)]
         # Sort the list in descending order by bob.speed
-        return sorted(list_bob, key=lambda bob: bob.speed, reverse=True)
-
-    def create_dict_food(self):
+        self.list_bob = sorted(list_bob, key=lambda bob: bob.speed, reverse=True)
+    
+    def create_dict_food (self):
+        self.reset_occupied_by_food()
         dict_food = {}
-        for _ in range(NUMBER_FOOD):
+        for _ in range (NUMBER_FOOD):
             food = Food()
             food.set_position()
             position = (food.grid_x, food.grid_y)
-            if position in dict_food:
+            self.map.map_dict[position].occupied_by_food = True
+            if  position in dict_food:
                 dict_food[position].energy += 100
             else:
                 dict_food[position] = food
-        return dict_food
+        self.dict_food = dict_food.copy()
 
+    
     # append bob to list_bob in order
     def append_bob_to_list(self, bob):
         bisect.insort(self.list_bob, bob, key=lambda x: x.speed)
+
 
     # Implement logic for reproduction via parthenogenesis:
     def parthenogenesis_reproduce(self):
@@ -66,6 +80,7 @@ class EntityActivity:
                 baby.set_position(bob.grid_x, bob.grid_y)
                 self.append_bob_to_list(baby)
                 print(f"Baby born SINGLE with perception = {baby.perception}")
+        
 
     def sexual_reproduction(self):
         for bob1 in self.list_bob:
@@ -95,14 +110,16 @@ class EntityActivity:
                                 f"Baby born SEXUAL with perception = {baby.perception}"
                             )
                             self.append_bob_to_list(baby)
+    
 
     def bob_die(self):
         # Implement logic for Bob dying:
         for bob in self.list_bob:
             if bob.energy <= 0:
-                print(f"Bob is dead at energy = {bob.energy}")
+                # print(f"Bob is dead at energy = {bob.energy}")
                 self.list_bob.remove(bob)
-
+                
+                
     # Bob eat food and prey
     def bob_eat_food(self):
         keys_to_remove = []
@@ -138,6 +155,7 @@ class EntityActivity:
                     vision_area.append((x, y))
         return vision_area
 
+    
     # Find prey
     def find_prey(self, area, bob):
         # Extract coordinates of rectangle corners
@@ -193,10 +211,12 @@ class EntityActivity:
                             predator
                         )  # Found another predator at the same minimum distance
         return predator_target
-
-    # move_towards_target
+    
+    
+    #move_towards_target
     def move_towards_target(self):
-        for bob in self.list_bob:
+        for i, bob in enumerate(self.list_bob):
+            
             # Calculate the difference between Bob's position and the target position
             dx = bob.target[0] - bob.grid_x
             dy = bob.target[1] - bob.grid_y
@@ -211,7 +231,7 @@ class EntityActivity:
                 for _ in range(int(bob.total_speed)):
                     dx = bob.target[0] - bob.grid_x
                     dy = bob.target[1] - bob.grid_y
-
+                    
                     dx_direction = 0
                     dy_direction = 0
 
@@ -234,12 +254,29 @@ class EntityActivity:
                         bob.move(dx_direction, dy_direction)
 
                         self.set_new_target()
+                        
+                        outer_loop_break = False
+
+                        # Check if Bob meets food at the new position
+                        if self.map.map_dict[(bob.grid_x, bob.grid_y)].occupied_by_food:
+                            outer_loop_break = True
+                        # Check if Bob meets prey at the new position
+                        for other_bob in self.list_bob[i+1:]:
+                            if EntityActivity.check_collision(bob, other_bob) and bob.is_predator(other_bob) and bob != other_bob:
+                                outer_loop_break = True
+                                break
+                        if outer_loop_break:
+                            break
+                        
             else:
-                bob.energy = max(0, bob.energy - 0.5)
+                bob.energy = max( 0, bob.energy - 0.5)
                 self.set_new_target()
 
             bob.update_speed()
 
+
+        
+    
     # Set new target each unit of movement
     def set_new_target(self):
         for bob in self.list_bob:
