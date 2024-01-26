@@ -119,6 +119,7 @@ class EntityActivity:
                 food = self.dict_food.get((bob.grid_x, bob.grid_y))
                 keys_to_remove.append((food.grid_x, food.grid_y))
                 bob.energy += min(food.energy, 200 - bob.energy)
+                print("Bob eat food")
             else:
                 for prey in self.list_bob:
                     if bob.is_predator(prey) and bob != prey:
@@ -126,6 +127,7 @@ class EntityActivity:
                             200, 1 / 2 * prey.energy * (1 - prey.mass / bob.mass)
                         )
                         prey.energy = 0
+                        print("Bob eat prey")
             for key in keys_to_remove:
                 if key in self.dict_food:
                     del self.dict_food[key]
@@ -171,8 +173,9 @@ class EntityActivity:
         min_distance = float("inf")
         food_target = None
 
-        for food in self.dict_food.values():
-            if (food.grid_x, food.grid_y) in area:
+        for food_position in area:
+            food = self.dict_food.get(food_position)
+            if food:
                 distance = bob.distance_to(food)
                 # Here: when bob is in the same position with food, distance = 0
                 # since the function find_food is called before eat_food

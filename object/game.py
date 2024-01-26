@@ -35,12 +35,15 @@ class Game:
         self.playing = True
         # pygame.display.set_window_position(, )
         while self.playing:
-            # self.clock.tick(FRAME_RATE)
-            self.clock.tick(1)
             self.events()
+
+            # display fps in title
+            # pygame.display.set_caption('Game of Life - FPS: ' + str(int(self.clock.get_fps())))
             self.camera.update()
             self.draw()
             self.update_render_tick()
+            self.clock.tick(FRAME_RATE)
+            # self.clock.tick(1)
 
     def events(self):
         for event in pygame.event.get():
@@ -68,6 +71,7 @@ class Game:
         file.close()
 
     def update_render_tick(self):
+        print (len(self.entity_activity.list_bob))
         self.update_move_bob()
         self.eat_food()
         self.parthenogenesis_reproduce()
@@ -109,10 +113,10 @@ class Game:
                 ),
             )
 
-            energy_text = bob.font.render(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}', True, (255, 255, 255))
-            text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
-                                                  render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
-            self.screen.blit(energy_text, text_rect)
+            # energy_text = bob.font.render(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}', True, (255, 255, 255))
+            # text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
+            #                                       render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
+            # self.screen.blit(energy_text, text_rect)
             # print(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}')
 
 
