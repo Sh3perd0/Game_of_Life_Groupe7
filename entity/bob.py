@@ -33,7 +33,7 @@ class Bob(Entity):
         self.path_memory = deque([])
         self.perceived_food = set([])
         self.food_memory = []
-        self.available_memory = self.memory
+        self.available_memory =  2 * self.memory
 
     def set_mass_volume(self, mass):
         self.mass = mass
