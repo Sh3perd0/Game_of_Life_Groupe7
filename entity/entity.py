@@ -9,4 +9,3 @@ class Entity:
         self.grid_x = 0
         self.grid_y = 0
         self.energy = energy
-        self.font = pygame.font.Font(None, 36)
