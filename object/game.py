@@ -72,8 +72,8 @@ class Game:
 
     def update_render_tick(self):
         print (len(self.entity_activity.list_bob))
-        self.update_move_bob()
         self.eat_food()
+        self.update_move_bob()
         self.parthenogenesis_reproduce()
         self.sexual_reproduction()
         self.die()
