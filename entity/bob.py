@@ -4,10 +4,12 @@ import random
 from constant.settings import *
 from object.common import *
 from entity.entity import Entity
+import analyses.global_var_analyse as gva
 
 
 class Bob(Entity):
     def __init__(self, speed=DEFAULT_SPEED, energy=DEFAULT_ENERGY, perception=DEFAULT_PERCEPTION, mass=DEFAULT_MASS, memory=DEFAULT_MEMORY):
+        reload_settings()
         super().__init__(energy)
         self.set_initial_position()
         self.speed = speed
@@ -22,6 +24,7 @@ class Bob(Entity):
         self.speed_buffer = float(self.total_speed - int(self.total_speed))
         self.memory = memory
         self.food_memory = []
+        self.birthTick = gva.time
         
 
     def set_mass_volume(self, mass):

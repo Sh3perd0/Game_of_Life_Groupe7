@@ -7,6 +7,7 @@ class Map:
     # (grid_length_x, grid_length_y): number of cells each rows and columns
     # (width, height) : the dimensions of screen
     def __init__(self, screen, grid_length_x, grid_length_y):
+        reload_settings()
         self.block_tiles = None
         self.grid_length_x = grid_length_x
         self.grid_length_y = grid_length_y
@@ -46,7 +47,7 @@ class Map:
         self.block_tiles = blit_world
 
     # def render_map_camera(self, camera):
-    #     visible_cells = self.get_visible_cells(camera)
+    #     visible_cells = self.get_visible_cells(came(ra)
     #     for cell in visible_cells:
     #         scroll = camera.scroll
     #         p = cell.iso_poly

@@ -12,10 +12,14 @@ from entity.entity import Entity
 from logic_game.entity_activity import EntityActivity
 import pickle
 import codecs
+import analyses.global_var_analyse as gva
+import constant.settings
 
 
 class Game:
     def __init__(self, screen, clock):
+        settings = load_settings()
+
         self.screen = screen
         self.clock = clock
         self.width, self.height = self.screen.get_size()
@@ -29,6 +33,12 @@ class Game:
         # Set key repeat and event filter
         pygame.key.set_repeat(400, 30)
         pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN])
+
+    def load_settings():
+        with open('constant/settings.json', 'r') as file:
+            settings = json.load(file)
+        return settings
+
 
     # MAIN LOOP
     def run(self):
@@ -53,8 +63,8 @@ class Game:
                 if event.key == pygame.K_l:
                     self.load()
                 if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    self.playing = False
+
     
     def load(self):
          file = open('save.txt', 'rb')
@@ -74,6 +84,8 @@ class Game:
         self.parthenogenesis_reproduce()
         self.sexual_reproduction()
         self.die()
+        if self.newAnalyse() == -1: #si on retourne 1, il n'y a plus de bob
+            self.playing = False
 
         self.tick += 1
         if self.tick == TICK:
@@ -198,3 +210,8 @@ class Game:
 
     def update_move_bob(self):
        self.entity_activity.move_towards_target()
+
+    def newAnalyse(self):
+       self.entity_activity.newAnalyse()
+
+    

@@ -2,12 +2,14 @@ from entity.bob import Bob
 from entity.food import Food
 import random
 import pygame
-import bisect
+import bisect 
 from constant.settings import *
+import analyses.global_var_analyse as gva
 
 
 class EntityActivity:
     def __init__ (self):
+        reload_settings()
         # since Bob's priority order of action depends on spped
         # we need to sort the list according to speed
         self.list_bob = self.create_list_bob()
@@ -39,7 +41,13 @@ class EntityActivity:
     
     # append bob to list_bob in order
     def append_bob_to_list(self, bob):
-        bisect.insort(self.list_bob, bob, key=lambda x: x.speed)
+        #bisect.insort(self.list_bob, bob, key=lambda x: x.speed)
+        # Créer une liste des vitesses pour trouver la position d'insertion
+        speeds = [x.speed for x in self.list_bob]
+        # Trouver l'index où bob doit être inséré
+        index = bisect.bisect_right(speeds, bob.speed)
+        # Insérer bob à cet index dans la liste originale
+        self.list_bob.insert(index, bob)
 
     def bob_eat_food(self):
         keys_to_remove = []
@@ -48,6 +56,7 @@ class EntityActivity:
                 if EntityActivity.check_collision(bob, food):
                     keys_to_remove.append(grid)
                     bob.energy += min(food.energy, 200 - bob.energy)
+                    gva.nb_food_eat+=1
 
             for key in keys_to_remove:
                 if key in self.dict_food:
@@ -72,6 +81,7 @@ class EntityActivity:
                 baby.set_position(bob.grid_x, bob.grid_y)
                 self.append_bob_to_list(baby)
                 print(f"Baby born SINGLE with perception = {baby.perception}")
+                gva.nb_descendant+=1
         
 
     def sexual_reproduction(self):
@@ -94,6 +104,7 @@ class EntityActivity:
                             baby.set_position(bob1.grid_x, bob1.grid_y)
                             print(f"Baby born SEXUAL with perception = {baby.perception}")
                             self.append_bob_to_list(baby)
+                            gva.nb_descendant+=1
     
 
     def bob_die(self):
@@ -101,7 +112,9 @@ class EntityActivity:
         for bob in self.list_bob:
             if bob.energy <= 0:
                 print(f"Bob is dead at energy = {bob.energy}")
+                gva.bob_time_life.append(gva.time - bob.birthTick)
                 self.list_bob.remove(bob)
+
                 
                 
     def bob_eat_prey(self):
@@ -232,7 +245,29 @@ class EntityActivity:
             bob.update_speed()
 
 
-        
+    def newAnalyse(self):
+        gva.time+=1
+        masse=0
+        energy=0
+        speed=0
+        perception = 0
+        pop_bob = len(self.list_bob)
+        if pop_bob!=0:
+            for bob in self.list_bob:
+                masse += bob.mass
+                energy += bob.energy
+                speed+= bob.speed
+                perception += bob.perception
+            masse = masse/pop_bob
+            energy = energy/pop_bob
+            speed = energy/pop_bob
+            perception = perception/pop_bob
+            gva.newValue(gva.time, masse,energy,speed,pop_bob, perception)
+            return 0
+        else:
+            return -1
+
+
     
     # Set new target each unit of movement
     def set_new_target(self):
