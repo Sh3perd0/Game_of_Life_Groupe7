@@ -9,7 +9,7 @@ import analyses.global_var_analyse as gva
 class EntityActivity:
     def __init__ (self):
         reload_settings()
-        # since Bob's priority order of action depends on spped
+        # since Bob's priority order of action depends on speed
         # we need to sort the list according to speed
         self.list_bob = []
         self.create_list_bob()
@@ -25,9 +25,7 @@ class EntityActivity:
     
 
     def create_list_bob(self):
-        list_bob = [Bob() for _ in range(NUMBER_BOB)]
-        # Sort the list in descending order by bob.speed
-        self.list_bob = sorted(list_bob, key=lambda bob: bob.speed, reverse=True)
+        self.list_bob = [Bob() for _ in range(NUMBER_BOB)]
     
     def create_dict_food (self):
         dict_food = {}
@@ -44,7 +42,7 @@ class EntityActivity:
     
     # append bob to list_bob in order
     def append_bob_to_list(self, bob):
-        #bisect.insort(self.list_bob, bob, key=lambda x: x.speed)
+        #bisect.insort(self.list_bob, bob, key=lambda x: x.total_speed)
         # Créer une liste des vitesses pour trouver la position d'insertion
         speeds = [x.speed for x in self.list_bob]
         # Trouver l'index où bob doit être inséré
@@ -67,30 +65,31 @@ class EntityActivity:
 
     # Implement logic for reproduction via parthenogenesis:
     def parthenogenesis_reproduce(self):
-        for bob in self.list_bob:
-            if bob.energy >= MAX_ENERGY:
-                bob.energy = NEW_ENERGY_PARTH_REPRODUCE
-                speed = max(
-                    0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1)))
-                )
-                mass = max(0, round((random.uniform(bob.mass - 0.1, bob.mass + 0.1))))
-                memory = max(0, (bob.memory + random.randint(-1, 1)))
-                perception = bob.perception
-                if perception > 0:
-                    rand_num = random.randint(-1, 1)
-                    perception += rand_num
-                elif perception <= 0:
-                    perception += random.choice([0, 1])
-                baby = Bob(
-                    speed=speed,
-                    energy=NEW_ENERGY_PARTH_REPRODUCE,
-                    perception=perception,
-                    mass=mass,
-                    memory=memory,
-                )
-                baby.set_position(bob.grid_x, bob.grid_y)
-                self.append_bob_to_list(baby)
-                print(f"Baby born SINGLE with perception = {baby.perception}")
+            for bob in self.list_bob:
+                if bob.energy >= MAX_ENERGY:
+                    bob.energy = NEW_ENERGY_PARTH_REPRODUCE
+                    speed = max(
+                        0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1)))
+                    )
+                    mass = max(0, round((random.uniform(bob.mass - 0.1, bob.mass + 0.1))))
+                    memory = max(0, (bob.memory + random.randint(-1, 1)))
+                    perception = bob.perception
+                    if perception > 0:
+                        rand_num = random.randint(-1, 1)
+                        perception += rand_num
+                    elif perception <= 0:
+                        perception += random.choice([0, 1])
+                    baby = Bob(
+                        speed=speed,
+                        energy=NEW_ENERGY_PARTH_REPRODUCE,
+                        perception=perception,
+                        true_perception=perception,
+                        mass=mass,
+                        memory=memory,
+                    )
+                    baby.set_position(bob.grid_x, bob.grid_y)
+                    self.append_bob_to_list(baby)
+                    print(f"Baby born SINGLE with perception = {baby.perception}")
                 gva.nb_descendant+=1
         
 
@@ -210,8 +209,6 @@ class EntityActivity:
                     continue
 
                 if distance <= bob.perception:
-                    # Free food in memory
-                    bob.forget_food(food)
                     if distance < min_distance or (
                         distance == min_distance and food.energy > food_target.energy
                     ):
@@ -339,14 +336,8 @@ class EntityActivity:
             prey_target = self.find_prey(self.vision_area(bob), bob)
             predator_target = self.find_predator(self.vision_area(bob), bob)
 
-            foods_to_remember = [
-                f
-                for f in self.dict_food.values()
-                if (f != food_target and bob.distance_to(f) <= bob.perception)
-            ]
-            bob.remember_food(foods_to_remember)
-            bob.forget_food(food_target)
-
+            bob.set_perceived_food(set([f for f in self.dict_food.values() if bob.distance_to(f) <= bob.perception]))
+            
             if not predator_target:
                 if food_target:
                     target = pygame.Vector2(food_target.grid_x, food_target.grid_y)
@@ -369,7 +360,6 @@ class EntityActivity:
                             break  # No need to check further if one predator is in this area
                     if cell_visible:
                         area.append((x, y))
-
                 target = random((x, y) in area)
 
             if target is not None:
