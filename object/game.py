@@ -58,20 +58,18 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-    
 
-    
     def load(self):
-        with open('save.pkl', 'rb') as file:
+        with open("save.pkl", "rb") as file:
             self.entity_activity = pickle.load(file)
 
     def save(self):
-        with open('save.pkl', 'wb') as file:
+        with open("save.pkl", "wb") as file:
             pickle.dump(self.entity_activity, file)
 
-
     def update_render_tick(self):
-        print (len(self.entity_activity.list_bob))
+        # print(len(self.entity_activity.list_bob))
+        self.update_list_bob()
         self.eat_food()
         self.update_move_bob()
         self.parthenogenesis_reproduce()
@@ -103,7 +101,7 @@ class Game:
 
         image_bob = get_assets_img(BOB_IMAGE)
         # scaled_bob_image = get_scaled_image(image_bob, bob.get_pixel_bob_size())
-        for bob in self.entity_activity.list_bob :
+        for bob in self.entity_activity.list_bob:
             render_pos = get_render_pos(bob.grid_x, bob.grid_y)
             self.screen.blit(
                 get_scaled_image(image_bob, bob.get_pixel_bob_size()),
@@ -119,7 +117,6 @@ class Game:
             # self.screen.blit(energy_text, text_rect)
             # print(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}')
 
-
     # This version is for food with same size (faster)
     def draw_food(self):
         map_block_tiles = self.map.block_tiles
@@ -127,7 +124,6 @@ class Game:
 
         image_food = get_assets_img(FOOD_IMAGE)
         scaled_food_image = get_scaled_image(image_food, Food.get_pixel_food_size())
-
 
         for food in self.entity_activity.dict_food.values():
             render_pos = get_render_pos(food.grid_x, food.grid_y)
@@ -191,4 +187,9 @@ class Game:
         self.entity_activity.bob_die()
 
     def update_move_bob(self):
-       self.entity_activity.move_towards_target()
+        self.entity_activity.move_towards_target()
+
+    def update_list_bob(self):
+        self.entity_activity.list_bob = sorted(
+            self.entity_activity.list_bob, key=lambda bob: bob.total_speed, reverse=True
+        )

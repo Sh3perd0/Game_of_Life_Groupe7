@@ -23,9 +23,7 @@ class EntityActivity:
     
 
     def create_list_bob(self):
-        list_bob = [Bob() for _ in range(NUMBER_BOB)]
-        # Sort the list in descending order by bob.speed
-        self.list_bob = sorted(list_bob, key=lambda bob: bob.total_speed, reverse=True)
+        self.list_bob = [Bob() for _ in range(NUMBER_BOB)]
     
     def create_dict_food (self):
         dict_food = {}
