@@ -45,12 +45,15 @@ class Game:
         self.playing = True
         # pygame.display.set_window_position(, )
         while self.playing:
-            self.clock.tick(FRAME_RATE)
-            # self.clock.tick(10)
             self.events()
+
+            # display fps in title
+            # pygame.display.set_caption('Game of Life - FPS: ' + str(int(self.clock.get_fps())))
             self.camera.update()
             self.draw()
             self.update_render_tick()
+            self.clock.tick(FRAME_RATE)
+            # self.clock.tick(1)
 
     def events(self):
         for event in pygame.event.get():
@@ -78,9 +81,9 @@ class Game:
         file.close()
 
     def update_render_tick(self):
+        print (len(self.entity_activity.list_bob))
         self.update_move_bob()
         self.eat_food()
-        self.bob_eat_prey()
         self.parthenogenesis_reproduce()
         self.sexual_reproduction()
         self.die()
@@ -93,7 +96,7 @@ class Game:
             self.increment_day()
 
     def increment_day(self):
-        self.entity_activity.dict_food = self.entity_activity.create_dict_food().copy()
+        self.entity_activity.create_dict_food()
         self.day += 1
 
     def draw(self):
@@ -122,18 +125,11 @@ class Game:
                 ),
             )
 
-            # self.screen.blit(
-            #     scaled_bob_image,
-            #     (
-            #         render_pos[0] + map_block_tiles.get_width() / 2 + scroll.x,
-            #         render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y,
-            #     ),
-            # )
-
-            # energy_text = bob.font.render(f'E: {bob.energy: .2f}, P: {bob.perception}, T: {bob.target}, TV:{bob.total_speed:.2f}', True, (255, 255, 255))
+            # energy_text = bob.font.render(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}', True, (255, 255, 255))
             # text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
             #                                       render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
             # self.screen.blit(energy_text, text_rect)
+            # print(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}')
 
 
     # This version is for food with same size (faster)
@@ -143,6 +139,7 @@ class Game:
 
         image_food = get_assets_img(FOOD_IMAGE)
         scaled_food_image = get_scaled_image(image_food, Food.get_pixel_food_size())
+
 
         for food in self.entity_activity.dict_food.values():
             render_pos = get_render_pos(food.grid_x, food.grid_y)
@@ -204,9 +201,6 @@ class Game:
     # bob die : lost all of energy
     def die(self):
         self.entity_activity.bob_die()
-
-    def bob_eat_prey(self):
-        self.entity_activity.bob_eat_prey()
 
     def update_move_bob(self):
        self.entity_activity.move_towards_target()
