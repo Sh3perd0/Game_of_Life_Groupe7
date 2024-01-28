@@ -7,7 +7,7 @@ from constant.settings import *
 
 class EntityActivity:
     def __init__ (self):
-        # since Bob's priority order of action depends on spped
+        # since Bob's priority order of action depends on speed
         # we need to sort the list according to speed
         self.list_bob = []
         self.create_list_bob()
@@ -25,7 +25,7 @@ class EntityActivity:
     def create_list_bob(self):
         list_bob = [Bob() for _ in range(NUMBER_BOB)]
         # Sort the list in descending order by bob.speed
-        self.list_bob = sorted(list_bob, key=lambda bob: bob.speed, reverse=True)
+        self.list_bob = sorted(list_bob, key=lambda bob: bob.total_speed, reverse=True)
     
     def create_dict_food (self):
         dict_food = {}
@@ -42,7 +42,7 @@ class EntityActivity:
     
     # append bob to list_bob in order
     def append_bob_to_list(self, bob):
-        bisect.insort(self.list_bob, bob, key=lambda x: x.speed)
+        bisect.insort(self.list_bob, bob, key=lambda x: x.total_speed)
 
 
     # Implement logic for reproduction via parthenogenesis:
