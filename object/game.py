@@ -59,21 +59,21 @@ class Game:
                     pygame.quit()
                     sys.exit()
     
+
+    
     def load(self):
-         file = open('save.txt', 'rb')
-         s = file.read()
-         self.entity_activity = pickle.loads(codecs.decode(s,"base64"))
+        with open('save.pkl', 'rb') as file:
+            self.entity_activity = pickle.load(file)
 
     def save(self):
-        s = codecs.encode(pickle.dumps(self.entity_activity), "base64").decode()
-        file = open('save.txt', 'w')
-        file.write(s)
-        file.close()
+        with open('save.pkl', 'wb') as file:
+            pickle.dump(self.entity_activity, file)
+
 
     def update_render_tick(self):
         print (len(self.entity_activity.list_bob))
-        self.update_move_bob()
         self.eat_food()
+        self.update_move_bob()
         self.parthenogenesis_reproduce()
         self.sexual_reproduction()
         self.die()

@@ -187,8 +187,6 @@ class EntityActivity:
                     continue
 
                 if distance <= bob.perception:
-                    # Free food in memory
-                    bob.forget_food(food)
                     if distance < min_distance or (
                         distance == min_distance and food.energy > food_target.energy
                     ):
@@ -294,14 +292,8 @@ class EntityActivity:
             prey_target = self.find_prey(self.vision_area(bob), bob)
             predator_target = self.find_predator(self.vision_area(bob), bob)
 
-            foods_to_remember = [
-                f
-                for f in self.dict_food.values()
-                if (f != food_target and bob.distance_to(f) <= bob.perception)
-            ]
-            bob.remember_food(foods_to_remember)
-            bob.forget_food(food_target)
-
+            bob.set_perceived_food(set([f for f in self.dict_food.values() if bob.distance_to(f) <= bob.perception]))
+            
             if not predator_target:
                 if food_target:
                     target = pygame.Vector2(food_target.grid_x, food_target.grid_y)
@@ -324,7 +316,6 @@ class EntityActivity:
                             break  # No need to check further if one predator is in this area
                     if cell_visible:
                         area.append((x, y))
-
                 target = random((x, y) in area)
 
             if target is not None:
