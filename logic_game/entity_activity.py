@@ -47,30 +47,31 @@ class EntityActivity:
 
     # Implement logic for reproduction via parthenogenesis:
     def parthenogenesis_reproduce(self):
-        for bob in self.list_bob:
-            if bob.energy >= MAX_ENERGY:
-                bob.energy = NEW_ENERGY_PARTH_REPRODUCE
-                speed = max(
-                    0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1)))
-                )
-                mass = max(0, round((random.uniform(bob.mass - 0.1, bob.mass + 0.1))))
-                memory = max(0, (bob.memory + random.randint(-1, 1)))
-                perception = bob.perception
-                if perception > 0:
-                    rand_num = random.randint(-1, 1)
-                    perception += rand_num
-                elif perception <= 0:
-                    perception += random.choice([0, 1])
-                baby = Bob(
-                    speed=speed,
-                    energy=NEW_ENERGY_PARTH_REPRODUCE,
-                    perception=perception,
-                    mass=mass,
-                    memory=memory,
-                )
-                baby.set_position(bob.grid_x, bob.grid_y)
-                self.append_bob_to_list(baby)
-                print(f"Baby born SINGLE with perception = {baby.perception}")
+            for bob in self.list_bob:
+                if bob.energy >= MAX_ENERGY:
+                    bob.energy = NEW_ENERGY_PARTH_REPRODUCE
+                    speed = max(
+                        0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1)))
+                    )
+                    mass = max(0, round((random.uniform(bob.mass - 0.1, bob.mass + 0.1))))
+                    memory = max(0, (bob.memory + random.randint(-1, 1)))
+                    perception = bob.perception
+                    if perception > 0:
+                        rand_num = random.randint(-1, 1)
+                        perception += rand_num
+                    elif perception <= 0:
+                        perception += random.choice([0, 1])
+                    baby = Bob(
+                        speed=speed,
+                        energy=NEW_ENERGY_PARTH_REPRODUCE,
+                        perception=perception,
+                        true_perception=perception,
+                        mass=mass,
+                        memory=memory,
+                    )
+                    baby.set_position(bob.grid_x, bob.grid_y)
+                    self.append_bob_to_list(baby)
+                    print(f"Baby born SINGLE with perception = {baby.perception}")
         
 
     def sexual_reproduction(self):
