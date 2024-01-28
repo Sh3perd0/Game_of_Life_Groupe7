@@ -6,7 +6,6 @@ from object.game import Game
 import analyses.mainAnalyses as analyse
 import constant.settings as sett
 
-
 running = True
 playing = True
 
@@ -38,4 +37,4 @@ def launch():
     #if __name__ == "__main__":
     
     main()
-#launch()
+launch()

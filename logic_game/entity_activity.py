@@ -65,8 +65,11 @@ class EntityActivity:
 
     # Implement logic for reproduction via parthenogenesis:
     def parthenogenesis_reproduce(self):
+            
             for bob in self.list_bob:
-                if bob.energy >= MAX_ENERGY:
+                #print("bob : "+str(bob.energy))
+                #print("max energie : "+str(MAX_ENERGY))
+                if bob.energy >= MAX_ENERGY-50:
                     bob.energy = NEW_ENERGY_PARTH_REPRODUCE
                     speed = max(
                         0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1)))
@@ -143,6 +146,7 @@ class EntityActivity:
                 keys_to_remove.append((food.grid_x, food.grid_y))
                 bob.energy += min(food.energy, 200 - bob.energy)
                 print("Bob eat food")
+                gva.nb_food_eat+=1
             else:
                 for prey in self.list_bob:
                     if bob.is_predator(prey) and bob != prey:

@@ -67,7 +67,7 @@ class Game:
                     self.load()
                 if event.key == pygame.K_ESCAPE:
                     self.playing = False
-
+                
 
     def load(self):
         with open("save.pkl", "rb") as file:

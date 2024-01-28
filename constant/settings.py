@@ -18,7 +18,7 @@ NUMBER_BOB = settings['NUMBER_BOB']
 FRAME_RATE = settings['FRAME_RATE']
 TICK = settings['TICK']
 
-GRID_SIZE = 10
+GRID_SIZE = settings['GRID_SIZE']
 CELL_SIZE = settings['CELL_SIZE']
 
 DEFAULT_ENERGY = settings['DEFAULT_ENERGY']
@@ -78,4 +78,3 @@ def reload_settings():
     DEFAULT_SPEED = settings['DEFAULT_SPEED']
     DEFAULT_MASS = settings['DEFAULT_MASS']
     DEFAULT_MEMORY=settings['DEFAULT_MEMORY']
-    print(GRID_SIZE)
