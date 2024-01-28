@@ -48,25 +48,15 @@ class EntityActivity:
             for bob in self.list_bob:
                 if bob.energy >= MAX_ENERGY:
                     bob.energy = NEW_ENERGY_PARTH_REPRODUCE
-                    speed = max(
-                        0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1)))
-                    )
+                    speed = max(0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1))))
                     mass = max(0, round((random.uniform(bob.mass - 0.1, bob.mass + 0.1))))
                     memory = max(0, (bob.memory + random.randint(-1, 1)))
                     perception = bob.perception
                     if perception > 0:
-                        rand_num = random.randint(-1, 1)
-                        perception += rand_num
-                    elif perception <= 0:
+                        perception += random.choice([-1, 0, 1])
+                    elif perception == 0:
                         perception += random.choice([0, 1])
-                    baby = Bob(
-                        speed=speed,
-                        energy=NEW_ENERGY_PARTH_REPRODUCE,
-                        perception=perception,
-                        true_perception=perception,
-                        mass=mass,
-                        memory=memory,
-                    )
+                    baby = Bob(speed=speed,energy=NEW_ENERGY_PARTH_REPRODUCE,perception=perception,true_perception=perception,mass=mass,memory=memory)
                     baby.set_position(bob.grid_x, bob.grid_y)
                     self.append_bob_to_list(baby)
                     print(f"Baby born SINGLE with perception = {baby.perception}")
@@ -85,13 +75,8 @@ class EntityActivity:
                             baby = Bob(
                                 speed=(bob1.speed + bob2.speed) / 2,
                                 energy=NEW_ENERGY_SEXUAL_REPRODUCE,
-                                true_perception=(
-                                    bob1.true_perception + bob2.true_perception
-                                )
-                                / 2,
-                                perception=round(
-                                    (bob1.perception + bob2.perception) / 2
-                                ),
+                                true_perception=(bob1.true_perception + bob2.true_perception)/ 2,
+                                perception=int((bob1.perception + bob2.perception) / 2),
                                 mass=(bob1.mass + bob2.mass) / 2,
                                 memory=int((bob1.memory + bob2.memory) / 2),
                             )
@@ -121,9 +106,9 @@ class EntityActivity:
                 print("Bob eat food")
             else:
                 for prey in self.list_bob:
-                    if bob.is_predator(prey) and bob != prey:
+                    if bob.is_predator(prey) and bob.distance_to(prey)==0:
                         bob.energy += min(
-                            200, 1 / 2 * prey.energy * (1 - prey.mass / bob.mass)
+                            200-bob.energy, 1 / 2 * prey.energy * (1 - prey.mass / bob.mass)
                         )
                         prey.energy = 0
                         print("Bob eat prey")
@@ -314,20 +299,34 @@ class EntityActivity:
                             break  # No need to check further if one predator is in this area
                     if cell_visible:
                         area.append((x, y))
-                target = random((x, y) in area)
+                target = random((x,y) in area)
+                
 
             if target is not None:
                 bob.target = pygame.Vector2(target[0], target[1])
             else:
+                if self.dict_food.get((bob.grid_x,bob.grid_y)):
+                    
                 # bob.target = pygame.Vector2(random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1))
-                bob.target = pygame.Vector2(
-                    random.randint(
-                        max(0, bob.grid_x - 1), min(bob.grid_x + 1, GRID_SIZE - 1)
-                    ),
-                    random.randint(
-                        max(0, bob.grid_y - 1), min(bob.grid_y + 1, GRID_SIZE - 1)
-                    ),
-                )
+                    bob.target = pygame.Vector2(
+                        random.randint(
+                            max(0, bob.grid_x - 1), min(bob.grid_x + 1, GRID_SIZE - 1)
+                        ),
+                        random.randint(
+                            max(0, bob.grid_y - 1), min(bob.grid_y + 1, GRID_SIZE - 1)
+                        ),
+                    )
+                else:
+                    bob.target = pygame.Vector2(
+                        random.choice(
+                            [
+                                (bob.grid_x, min(GRID_SIZE - 1, bob.grid_y + 1)),
+                                (bob.grid_x, max(0, bob.grid_y - 1)),
+                                (min(GRID_SIZE - 1, bob.grid_x + 1), bob.grid_y),
+                                (max(0, bob.grid_x - 1), bob.grid_y),
+                            ]
+                        )
+                    )
                 # print (f"Random target {bob.target}")
             # print (food_target)
             # print (prey_target)
