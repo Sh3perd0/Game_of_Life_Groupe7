@@ -35,10 +35,9 @@ class Game:
         pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN])
 
     def load_settings():
-        with open('constant/settings.json', 'r') as file:
+        with open("constant/settings.json", "r") as file:
             settings = json.load(file)
         return settings
-
 
     # MAIN LOOP
     def run(self):
@@ -68,7 +67,6 @@ class Game:
                 if event.key == pygame.K_ESCAPE:
                     self.playing = False
 
-
     def load(self):
         with open("save.pkl", "rb") as file:
             self.entity_activity = pickle.load(file)
@@ -80,12 +78,12 @@ class Game:
     def update_render_tick(self):
         # print(len(self.entity_activity.list_bob))
         self.update_list_bob()
-        self.eat_food()
         self.update_move_bob()
+        self.eat_food()
         self.parthenogenesis_reproduce()
         self.sexual_reproduction()
         self.die()
-        if self.newAnalyse() == -1: #si on retourne 1, il n'y a plus de bob
+        if self.newAnalyse() == -1:  # si on retourne 1, il n'y a plus de bob
             self.playing = False
 
         self.tick += 1
@@ -202,9 +200,7 @@ class Game:
         self.entity_activity.move_towards_target()
 
     def newAnalyse(self):
-       self.entity_activity.newAnalyse()
-
-    
+        self.entity_activity.newAnalyse()
 
     def update_list_bob(self):
         self.entity_activity.list_bob = sorted(

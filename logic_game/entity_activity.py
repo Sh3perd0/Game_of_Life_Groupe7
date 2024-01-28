@@ -145,9 +145,10 @@ class EntityActivity:
                 print("Bob eat food")
             else:
                 for prey in self.list_bob:
-                    if bob.is_predator(prey) and bob != prey:
+                    if bob.is_predator(prey) and bob.distance_to(prey) == 0:
                         bob.energy += min(
-                            200, 1 / 2 * prey.energy * (1 - prey.mass / bob.mass)
+                            200 - bob.energy,
+                            1 / 2 * prey.energy * (1 - prey.mass / bob.mass),
                         )
                         prey.energy = 0
                         print("Bob eat prey")
@@ -336,8 +337,16 @@ class EntityActivity:
             prey_target = self.find_prey(self.vision_area(bob), bob)
             predator_target = self.find_predator(self.vision_area(bob), bob)
 
-            bob.set_perceived_food(set([f for f in self.dict_food.values() if bob.distance_to(f) <= bob.perception]))
-            
+            bob.set_perceived_food(
+                set(
+                    [
+                        f
+                        for f in self.dict_food.values()
+                        if bob.distance_to(f) <= bob.perception
+                    ]
+                )
+            )
+
             if not predator_target:
                 if food_target:
                     target = pygame.Vector2(food_target.grid_x, food_target.grid_y)
@@ -365,15 +374,24 @@ class EntityActivity:
             if target is not None:
                 bob.target = pygame.Vector2(target[0], target[1])
             else:
-                # bob.target = pygame.Vector2(random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1))
-                bob.target = pygame.Vector2(
-                    random.randint(
-                        max(0, bob.grid_x - 1), min(bob.grid_x + 1, GRID_SIZE - 1)
-                    ),
-                    random.randint(
-                        max(0, bob.grid_y - 1), min(bob.grid_y + 1, GRID_SIZE - 1)
-                    ),
-                )
-                # print (f"Random target {bob.target}")
-            # print (food_target)
-            # print (prey_target)
+                if self.dict_food.get((bob.grid_x, bob.grid_y)):
+                    # bob.target = pygame.Vector2(random.randint(0, GRID_SIZE - 1), random.randint(0, GRID_SIZE - 1))
+                    bob.target = pygame.Vector2(
+                        random.randint(
+                            max(0, bob.grid_x - 1), min(bob.grid_x + 1, GRID_SIZE - 1)
+                        ),
+                        random.randint(
+                            max(0, bob.grid_y - 1), min(bob.grid_y + 1, GRID_SIZE - 1)
+                        ),
+                    )
+                else:
+                    bob.target = pygame.Vector2(
+                        random.choice(
+                            [
+                                (bob.grid_x, min(GRID_SIZE - 1, bob.grid_y + 1)),
+                                (bob.grid_x, max(0, bob.grid_y - 1)),
+                                (min(GRID_SIZE - 1, bob.grid_x + 1), bob.grid_y),
+                                (max(0, bob.grid_x - 1), bob.grid_y),
+                            ]
+                        )
+                    )
