@@ -1,12 +1,16 @@
 {
-    "BOB_IMAGE": "bob.png",
+    "BOB_IMAGE": [
+        "blue_stickman.png",
+        "purple_stickman.png",
+        "green_stickman.png"
+    ],
     "FOOD_IMAGE": "apple.png",
-    "CELL_IMAGE": "grass.png",
-    "NUMBER_FOOD": 100,
-    "NUMBER_BOB": 1,
+    "CELL_IMAGE": "grass2.png",
+    "NUMBER_FOOD": 39,
+    "NUMBER_BOB": 2,
     "FRAME_RATE": 60,
     "TICK": 100,
-    "GRID_SIZE": 30,
+    "GRID_SIZE": 34,
     "CELL_SIZE": 16.0,
     "DEFAULT_ENERGY": 100,
     "ENERGY_TO_REPRODUCE": 150,
@@ -14,8 +18,8 @@
     "NEW_ENERGY_SEXUAL_REPRODUCE": 100,
     "NEW_ENERGY_PARTH_REPRODUCE": 50,
     "MAX_ENERGY": 200,
-    "DEFAULT_PERCEPTION": 1,
+    "DEFAULT_PERCEPTION": 4,
     "DEFAULT_SPEED": 1,
     "DEFAULT_MASS": 1,
-    "DEFAULT_MEMORY": 1
+    "DEFAULT_MEMORY": 5
 }

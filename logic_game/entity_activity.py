@@ -56,7 +56,7 @@ class EntityActivity:
             for grid, food in self.dict_food.items():
                 if EntityActivity.check_collision(bob, food):
                     keys_to_remove.append(grid)
-                    bob.energy += min(food.energy, 200 - bob.energy)
+                    bob.energy += min(food.energy, MAX_ENERGY - bob.energy)
                     gva.nb_food_eat+=1
 
             for key in keys_to_remove:
@@ -65,16 +65,15 @@ class EntityActivity:
 
     # Implement logic for reproduction via parthenogenesis:
     def parthenogenesis_reproduce(self):
-            
             for bob in self.list_bob:
                 #print("bob : "+str(bob.energy))
                 #print("max energie : "+str(MAX_ENERGY))
-                if bob.energy >= MAX_ENERGY-50:
+                if bob.energy >= MAX_ENERGY-5:
                     bob.energy = NEW_ENERGY_PARTH_REPRODUCE
-                    speed = max(
-                        0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1)))
-                    )
-                    mass = max(0, round((random.uniform(bob.mass - 0.1, bob.mass + 0.1))))
+                    #speed = max(0, round((random.uniform(bob.speed - 0.1, bob.speed + 0.1))))
+                    speed = max(0, (random.uniform(bob.speed - 0.1, bob.speed + 0.1)))
+                    #mass = max(0, round((random.uniform(bob.mass - 0.1, bob.mass + 0.1))))
+                    mass = max(0, (random.uniform(bob.mass - 0.2, bob.mass + 0.2)))
                     memory = max(0, (bob.memory + random.randint(-1, 1)))
                     perception = bob.perception
                     if perception > 0:
@@ -93,7 +92,7 @@ class EntityActivity:
                     baby.set_position(bob.grid_x, bob.grid_y)
                     self.append_bob_to_list(baby)
                     print(f"Baby born SINGLE with perception = {baby.perception}")
-                gva.nb_descendant+=1
+                    gva.nb_descendant+=1
         
 
     def sexual_reproduction(self):
@@ -144,18 +143,19 @@ class EntityActivity:
             if self.dict_food.get((bob.grid_x, bob.grid_y)):
                 food = self.dict_food.get((bob.grid_x, bob.grid_y))
                 keys_to_remove.append((food.grid_x, food.grid_y))
-                bob.energy += min(food.energy, 200 - bob.energy)
+                bob.energy += min(food.energy, MAX_ENERGY - bob.energy)
                 print("Bob eat food")
                 gva.nb_food_eat+=1
             else:
                 for prey in self.list_bob:
                     if bob.is_predator(prey) and bob.distance_to(prey) == 0:
                         bob.energy += min(
-                            200 - bob.energy,
+                            MAX_ENERGY - bob.energy,
                             1 / 2 * prey.energy * (1 - prey.mass / bob.mass),
                         )
                         prey.energy = 0
                         print("Bob eat prey")
+                        gva.nb_canibalisme+=1
             for key in keys_to_remove:
                 if key in self.dict_food:
                     del self.dict_food[key]
@@ -316,7 +316,7 @@ class EntityActivity:
         speed=0
         perception = 0
         pop_bob = len(self.list_bob)
-        if pop_bob!=0:
+        if pop_bob>0:
             for bob in self.list_bob:
                 masse += bob.mass
                 energy += bob.energy
@@ -324,12 +324,10 @@ class EntityActivity:
                 perception += bob.perception
             masse = masse/pop_bob
             energy = energy/pop_bob
-            speed = energy/pop_bob
+            speed = speed/pop_bob
             perception = perception/pop_bob
             gva.newValue(gva.time, masse,energy,speed,pop_bob, perception)
-            return 0
-        else:
-            return -1
+        return pop_bob
 
 
     
@@ -373,7 +371,8 @@ class EntityActivity:
                             break  # No need to check further if one predator is in this area
                     if cell_visible:
                         area.append((x, y))
-                target = random((x, y) in area)
+                target = random.choice(area)
+
 
             if target is not None:
                 bob.target = pygame.Vector2(target[0], target[1])

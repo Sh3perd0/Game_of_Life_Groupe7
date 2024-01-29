@@ -5,18 +5,20 @@ import sys
 from settings import Settings
 import os
 import json
+#import constant.settings as sett
 
-sys.path.insert(0, 'C:/Users/d3velopp/Documents/Python/Game_Of_Life/Game_of_Life_Groupe7')
-import constant.settings as sett
+#import main
 
-import main
-
+#sys.path.insert(0, 'C:/Users/d3velopp/Documents/Python/Game_Of_Life/Game_of_Life_Groupe7')
+pygame.init()
+pygame.font.init()
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 # Initialisation de Pygame
-pygame.init()
-pygame.font.init()
+
+#pour sortir a la fin
+doonce = True
 
 # Paramètres par défaut de la résolution de la fenêtre
 default_width = 1920
@@ -27,11 +29,12 @@ default_width_image = 1920
 default_height_image = 1080
 
 #ajouter chaque chemin d'image ici
-image_paths = ["image_premier_plan_0.png","image_premier_plan_1.png","start_menu_0.png", "start_menu_1.png", "how_to_play.png", "Bob_number.png", "Volume.png", "music_choice.png", "graphical_settings.png", "skin_choice_settings.png","Food_number.png","Tick_number.png","default_energy.png","loose_of_energy.png","Reproducing_energy.png","_newborn_energy_parth.png","max_energy.png","default_speed.png","default_perception.png","default_mass.png","default_memory.png","max_framerate.png","_newborn_energy_sexual.png"]
+image_paths = ["image_premier_plan_0.png","image_premier_plan_1.png","start_menu_0.png", "start_menu_1.png", "how_to_play.png", "Bob_number.png", "Volume.png", "music_choice.png", "graphical_settings.png", "skin_choice_settings.png","Food_number.png","Tick_number.png","default_energy.png","loose_of_energy.png","Reproducing_energy.png","_newborn_energy_parth.png","max_energy.png","default_speed.png","default_perception.png","default_mass.png","default_memory.png","max_framerate.png","_newborn_energy_sexual.png","gridsize.png"]
 skin_paths_1 =["blue_fallguy.png","purple_fallguy.png","green_fallguy.png"]
 skin_paths_2=["blue_stickman.png","purple_stickman.png","green_stickman.png"]
-skin_paths_3=["pink_amogus.png","green_amogus","red_amogus"]
+skin_paths_3=["pink_amogus.png","green_amogus.png","red_amogus.png"]
 default_set_skin = skin_paths_1
+
 set_skin_choisis=default_set_skin
 
 #taille de l'écran
@@ -46,29 +49,32 @@ current_res_y=default_height
 screen = pygame.display.set_mode((current_res_x, current_res_y))
 pygame.display.set_caption("Game of Life")
 
-image_premier_plan_settings = Settings(0, 0, 0, 0, (255, 255, 0),"menu/assets/image_premier_plan_0.png",(default_width_image,default_height_image))
-main_menu_settings = Settings(current_res_x // 2 - 200, current_res_y // 2 + 100, 400, 100, (255, 255, 0),"menu/assets/start_menu_0.png", (default_width_image,default_height_image))
-how_to_play_settings = Settings(current_res_x // 2 - 450, current_res_y // 2, 0, 0, (255, 255, 0), "menu/assets/how_to_play.png" , (default_width_image,default_height_image))
-bob_number_settings = Settings(current_res_x // 2 - 418, current_res_y // 2 + 161, 850, 155, (255, 255, 0), "menu/assets/Bob_number.png" , (default_width_image,default_height_image))
-volume_settings = Settings(current_res_x // 2 - 418, current_res_y // 2 + 161, 850, 155, (255, 255, 0), "menu/assets/Volume.png", (default_width_image,default_height_image))
-music_settings = Settings(current_res_x *0.0703 , current_res_y *  0.63 , 485, 155, (255, 255, 0), "menu/assets/music_choice.png", (default_width_image,default_height_image))
+image_premier_plan_settings = Settings(0, 0, 0, 0, (255, 255, 0),"image_premier_plan_0.png",(default_width_image,default_height_image))
+main_menu_settings = Settings(current_res_x // 2 - 200, current_res_y // 2 + 100, 400, 100, (255, 255, 0),"start_menu_0.png", (default_width_image,default_height_image))
+how_to_play_settings = Settings(current_res_x // 2 - 450, current_res_y // 2, 0, 0, (255, 255, 0), "how_to_play.png" , (default_width_image,default_height_image))
+bob_number_settings = Settings(current_res_x // 2 - 418, current_res_y // 2 + 161, 850, 155, (255, 255, 0), "Bob_number.png" , (default_width_image,default_height_image))
+volume_settings = Settings(current_res_x // 2 - 418, current_res_y // 2 + 161, 850, 155, (255, 255, 0), "Volume.png", (default_width_image,default_height_image))
+music_settings = Settings(current_res_x *0.0703 , current_res_y *  0.63 , 485, 155, (255, 255, 0), "music_choice.png", (default_width_image,default_height_image))
 #graphical_settings = Settings(current_res_x*0.0703 , current_res_y *  0.63 , 0, 0, (255, 255, 0), "graphical_settings.png", (default_width_image,default_height_image))
 #resolution_settings = Settings(current_res_x // 2 - 418, current_res_y // 2 + 161, 850, 155, (255, 255, 0), "resolution.png", (default_width_image,default_height_image))
-skin_choice_settings = Settings(current_res_x *0.11 , current_res_y *  0.63 , 485, 155, (255, 255, 0), "menu/assets/skin_choice_settings.png",(default_width_image,default_height_image))
+skin_choice_settings = Settings(current_res_x *0.11 , current_res_y *  0.63 , 485, 155, (255, 255, 0), "skin_choice_settings.png",(default_width_image,default_height_image))
 
-food_number_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/Food_number.png" , (default_width_image,default_height_image))
-tick_number_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/Tick_number.png" , (default_width_image,default_height_image))
-default_energy_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/default_energy.png" , (default_width_image,default_height_image))
-loose_of_energy_repr_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/loose_of_energy_repr.png" , (default_width_image,default_height_image))
-reproducing_energy_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/Reproducing_energy.png" , (default_width_image,default_height_image))
-newborn_energy_parth_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/_newborn_energy_parth.png" , (default_width_image,default_height_image))
-max_energy_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/max_energy.png" , (default_width_image,default_height_image))
-default_speed_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/default_speed.png" , (default_width_image,default_height_image))
-default_perception_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/default_perception.png" , (default_width_image,default_height_image))
-default_mass_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/default_mass.png" , (default_width_image,default_height_image))
-default_memory_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/default_memory.png" , (default_width_image,default_height_image))
-max_framerate_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/max_framerate.png" , (default_width_image,default_height_image))
-newborn_energy_sexual_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "menu/assets/_newborn_energy_sexual.png" , (default_width_image,default_height_image))
+food_number_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "Food_number.png" , (default_width_image,default_height_image))
+tick_number_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "Tick_number.png" , (default_width_image,default_height_image))
+default_energy_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "default_energy.png" , (default_width_image,default_height_image))
+loose_of_energy_repr_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "loose_of_energy_repr.png" , (default_width_image,default_height_image))
+reproducing_energy_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "Reproducing_energy.png" , (default_width_image,default_height_image))
+newborn_energy_parth_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "_newborn_energy_parth.png" , (default_width_image,default_height_image))
+max_energy_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "max_energy.png" , (default_width_image,default_height_image))
+default_speed_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "default_speed.png" , (default_width_image,default_height_image))
+default_perception_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "default_perception.png" , (default_width_image,default_height_image))
+default_mass_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "default_mass.png" , (default_width_image,default_height_image))
+default_memory_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "default_memory.png" , (default_width_image,default_height_image))
+max_framerate_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "max_framerate.png" , (default_width_image,default_height_image))
+newborn_energy_sexual_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "_newborn_energy_sexual.png" , (default_width_image,default_height_image))
+map_settings = Settings(current_res_x // 2 - 410, current_res_y // 2 + 140, 820, 155, (255, 255, 0), "gridsize.png" , (default_width_image,default_height_image))
+
+
 
 # Initialisation des variables d'état
 selection = 0
@@ -93,6 +99,7 @@ newborn_energy_parth_settings_displayed = False
 newborn_energy_sexual_settings_displayed = False
 reproducing_energy_settings_displayed = False
 tick_number_settings_displayed = False
+map_settings_displayed = False
 
 last_cursor_position = None
 mainmenu_settings_displayed = False
@@ -112,6 +119,7 @@ dragging_max_energy = False
 dragging_max_framerate = False
 dragging_reproducing_energy = False
 dragging_tick_number = False
+dragging_map = False
 enter_pressed = False
 escape_pressed = False
 scaled_image=None
@@ -122,6 +130,9 @@ slider_height = 10
 
 slider_x_newborn_energy_parth = int((screen_width - slider_length) / 2)
 slider_y_newborn_energy_parth = int(screen_height / 2) + 235
+
+slider_x_map = int((screen_width - slider_length) / 2)
+slider_y_map= int(screen_height / 2) + 235
 
 slider_x_newborn_energy_sexual = int((screen_width - slider_length) / 2)
 slider_y_newborn_energy_sexual = int(screen_height / 2) + 235
@@ -185,6 +196,7 @@ current_max_energy=200
 current_max_framerate=60
 current_reproducing_energy=150
 current_tick_number=100
+current_map=10
 
 
 cursor_offset_y = -5
@@ -203,6 +215,7 @@ global_cursor_position_max_energy = int((screen_width - slider_length) / 2)
 global_cursor_position_max_framerate = int((screen_width - slider_length) / 2)
 global_cursor_position_reproducing_energy = int((screen_width - slider_length) / 2)
 global_cursor_position_tick_number = int((screen_width - slider_length) / 2)
+global_cursor_position_map= int((screen_width - slider_length) / 2)
 
 
 
@@ -224,6 +237,7 @@ cursor_x_max_energy=0
 cursor_x_max_framerate=0
 cursor_x_reproducing_energy=0
 cursor_x_tick_number=0
+cursor_x_map=0
 
 cursor_position=0
 global_cursor_position_bob=slider_x_bob
@@ -241,6 +255,7 @@ global_cursor_position_max_energy=slider_x_max_energy
 global_cursor_position_max_framerate=slider_x_max_framerate
 global_cursor_position_reproducing_energy=slider_x_reproducing_energy
 global_cursor_position_tick_number=slider_x_tick_number
+global_cursor_position_map=slider_x_map
 
 current_settings = image_premier_plan_settings #premiere page de settings, et également définie comme la courante
 animation_speed = 2 #vitesse animation 
@@ -249,7 +264,7 @@ last_switch_time = pygame.time.get_ticks() #get tick depuis le dernier switch
 
 #font_msg_path = os.path.join("", "font", "menu/font/SpaceMono-Regular.ttf") 
 #chemin de la police de base
-font_msg_path = "menu/font/SpaceMono-Regular.ttf"
+font_msg_path = "SpaceMono-Regular.ttf"
 font_msg = pygame.font.Font(font_msg_path, 20) #taille police de base 
 
 font_slider_bob = pygame.font.Font(font_msg_path, 25)
@@ -267,6 +282,7 @@ font_slider_max_energy=font_slider_volume
 font_slider_max_framerate=font_slider_volume
 font_slider_reproducing_energy=font_slider_volume
 font_slider_tick_number=font_slider_volume
+font_slider_map=font_slider_volume
 
 #texte affiché sur les parametres hors main menu
 text_surface_settings = font_msg.render("Entrée : Choisir    Echap : Retour", True, (255, 255, 0))
@@ -280,10 +296,10 @@ text_credits = font_msg.render("Made by Thomas, Lucien, Quyen, Quynh, Abrouk and
 text_hitbox_credits = text_credits.get_rect(topright=(1733, 105))
 
 #musiques possibles
-"""music_left = pygame.mixer.Sound("menu/sounds/_deep_in_the_Chimney.mp3")
-music_middle = pygame.mixer.Sound("menu/sounds/_go Green.mp3")
-music_right = pygame.mixer.Sound("menu/sounds/_ninja Skills.mp3")
-music_choice=music_left #musique courante"""
+music_left = pygame.mixer.Sound("_deep_in_the_Chimney.mp3")
+music_middle = pygame.mixer.Sound("_go Green.mp3")
+music_right = pygame.mixer.Sound("_ninja Skills.mp3")
+music_choice=music_left
 
 
 #fonctions de slider attention les yeux y'a plein d'instances de ce slider, pour autant de paramètres ajustables !
@@ -300,6 +316,12 @@ def update_slider_position_volume():
     cursor_position_volume = slider_x_volume + (current_volume / max_value) * slider_length - 5
     cursor_x_volume = max(min(cursor_position_volume - slider_x_volume, slider_length - 10), 0)
     return slider_x_volume + cursor_x_volume
+
+def update_slider_position_map():
+    global current_map
+    cursor_position_map = slider_x_map + (current_map/ max_value) * slider_length - 5
+    cursor_x_map= max(min(cursor_position_map - slider_x_map, slider_length - 10), 0)
+    return slider_x_map + cursor_x_map
 
 def update_slider_position_newborn_energy_parth():
     global current_newborn_energy_parth
@@ -396,6 +418,7 @@ cursor_x_max_energy=update_slider_position_max_energy()
 cursor_x_max_framerate=update_slider_position_max_framerate()
 cursor_x_reproducing_energy=update_slider_position_reproducing_energy()
 cursor_x_tick_number=update_slider_position_tick_number()
+cursor_x_map=update_slider_position_map()
 # Redimensionnement de toutes les images
 
 
@@ -415,6 +438,7 @@ cursor_slider_max_energy = pygame.Rect(update_slider_position_max_energy(), slid
 cursor_slider_max_framerate = pygame.Rect(update_slider_position_max_framerate(), slider_y_max_framerate + cursor_offset_y, 10, 20)
 cursor_slider_tick_number = pygame.Rect(update_slider_position_tick_number(), slider_y_tick_number + cursor_offset_y, 10, 20)
 cursor_slider_reproducing_energy = pygame.Rect(update_slider_position_reproducing_energy(), slider_y_reproducing_energy + cursor_offset_y, 10, 20)
+cursor_slider_map = pygame.Rect(update_slider_position_map(), slider_y_map + cursor_offset_y, 10, 20)
 
 
 
@@ -423,7 +447,7 @@ while running:
 
     for event in pygame.event.get():
         if (current_settings==image_premier_plan_settings and pygame.mixer.get_busy()==0):
-            #music_choice.play()
+            music_choice.play()
             print("play music")
         if event.type == pygame.QUIT:
             running = False
@@ -443,6 +467,15 @@ while running:
         elif event.type == pygame.MOUSEBUTTONUP:
     # Désactive le glissement lorsque l'utilisateur relâche le clic
                 dragging_bob_number = False
+
+        if map_settings_displayed and event.type == pygame.MOUSEBUTTONDOWN:
+            if cursor_slider_map.collidepoint(event.pos):
+            # L'utilisateur a cliqué sur le curseur du slider, active le glissement
+                dragging_map = True
+                offset_x_MS=event.pos[0] - cursor_slider_map.x
+        elif event.type == pygame.MOUSEBUTTONUP:
+    # Désactive le glissement lorsque l'utilisateur relâche le clic
+                dragging_map = False
 
         if newborn_energy_parth_settings_displayed and event.type == pygame.MOUSEBUTTONDOWN:
             if cursor_slider_newborn_energy_parth.collidepoint(event.pos):
@@ -573,7 +606,7 @@ while running:
         
         ###AFFICHAGE DES SLIDERS. PEUT PEUT ETRE CHANGER LES FONCTIONS UTILISEES PAR LES SLIDERS ICI. POUR LINSTANT ILS SONT CALQUES
         ###LE GETVALUE DU SLIDER DE BOB, A EVENTUELLEMENT MODIFIER
-                   
+                
         if dragging_bob_number and event.type == pygame.MOUSEMOTION:
             if current_settings ==bob_number_settings:
                 # Mise à jour de la position du curseur du slider
@@ -600,6 +633,19 @@ while running:
                 cursor_slider_max_energy.x=cursor_x_max_energy
                 text_max_energy = font_slider_max_energy.render(str(current_max_energy), True, (255, 255, 255))
                 text_rect_max_energy = text_max_energy.get_rect()
+
+        if dragging_map and event.type == pygame.MOUSEMOTION:
+            if current_settings == map_settings:
+                # Mise à jour de la position du curseur du slider
+                cursor_x_map = event.pos[0] - offset_x_MS
+                cursor_x_map = max(min(cursor_x_map, slider_x_map+ slider_length ), slider_x_map)  # Assurez-vous que le curseur reste dans les limites du slider
+                # Mise à jour de la valeur du slider en fonction de la position
+                current_map = (int)(current_settings.get_slider_value_map(cursor_x_map, slider_x_map, slider_length, max_value))
+                print("taille de la map : ",current_map)
+                # Mise à jour du volume en fonction du curseur (représentation graphique du curseur modifiée en fonction de la position réelle du curseur)
+                cursor_slider_map.x=cursor_x_map
+                text_map = font_slider_map.render(str(current_map), True, (255, 255, 255))
+                text_rect_map = text_map.get_rect()
 
         if dragging_newborn_energy_parth and event.type == pygame.MOUSEMOTION:
             if current_settings == newborn_energy_parth_settings:
@@ -758,7 +804,7 @@ while running:
                 cursor_slider_tick_number.x=cursor_x_tick_number
                 text_tick_number = font_slider_tick_number.render(str(current_tick_number), True, (255, 255, 255))
                 text_rect_tick_number = text_tick_number.get_rect(center=(cursor_slider_tick_number.x + cursor_slider_tick_number.width / 2, cursor_slider_tick_number.y - 25))
-          
+        
         if dragging_volume and event.type == pygame.MOUSEMOTION:
             if current_settings == volume_settings:
                 cursor_x_volume = event.pos[0] - offset_x_V
@@ -817,17 +863,18 @@ while running:
                     print("playing ninja skills")
                     music_choice.stop()
                     music_choice = music_right
-    if current_settings == skin_choice_settings:
+    elif current_settings == skin_choice_settings:
             current_settings.rect_x = max(206, min(current_settings.rect_x, 716+510))
+            print("CURSEUR ICI", current_settings.rect_x)
             if keys[pygame.K_RIGHT]:
                 current_settings.rect_x = current_settings.rect_x + 510
-                if current_settings.rect_x == 206:
+                if round(current_settings.rect_x) == 211:
                     print("set1")
                     set_skins_choisis=skin_paths_1
-                if current_settings.rect_x == 716:
+                if round(current_settings.rect_x) == 721:
                     print("set2")
                     set_skin_choisis=skin_paths_2
-                if current_settings.rect_x == 716+510:
+                if current_settings.rect_x == 1226:
                     print("set3")
                     set_skin_choisis=skin_paths_3
             if keys[pygame.K_LEFT]:
@@ -844,12 +891,12 @@ while running:
             print("Le set de skin choisi est : ",set_skin_choisis)
     
     if pygame.mixer.get_busy()==0:
-            #music_choice.play()
+            music_choice.play()
             print("music play")
 
-    """music_left.set_volume(current_volume / 100)
+    music_left.set_volume(current_volume / 100)
     music_middle.set_volume(current_volume / 100)
-    music_right.set_volume(current_volume / 100)"""
+    music_right.set_volume(current_volume / 100)
 
     # Gestion du changement d'image dans le menu (=ecriture play clignotante)
     current_time = pygame.time.get_ticks()
@@ -857,13 +904,13 @@ while running:
 
     if elapsed_time_since_switch >= switch_interval and current_settings == image_premier_plan_settings:
         last_switch_time = current_time
-        current_settings.update_image("menu/assets/image_premier_plan_1.png" if current_settings.image_path == "menu/assets/image_premier_plan_0.png" else \
-                                       "menu/assets/image_premier_plan_0.png",(default_width_image,default_height_image))
+        current_settings.update_image("image_premier_plan_1.png" if current_settings.image_path == "image_premier_plan_0.png" else \
+                                    "image_premier_plan_0.png",(default_width_image,default_height_image))
 
     if elapsed_time_since_switch >= switch_interval and current_settings == main_menu_settings:
         last_switch_time = current_time
-        current_settings.update_image("menu/assets/start_menu_1.png" if current_settings.image_path == "menu/assets/start_menu_0.png" else \
-                                       "menu/assets/start_menu_0.png",(default_width_image,default_height_image))
+        current_settings.update_image("start_menu_1.png" if current_settings.image_path == "start_menu_0.png" else \
+                                    "start_menu_0.png",(default_width_image,default_height_image))
 
     # Gestion de la touche "Entrée"
     if keys[pygame.K_RETURN] and not enter_pressed:
@@ -897,10 +944,10 @@ while running:
                 bob_number_settings_displayed = True
                 current_settings = bob_number_settings
         elif current_settings == bob_number_settings:
-             if not skin_choice_displayed:
-                  print("Skin choice affiché")
-                  skin_choice_displayed = True
-                  current_settings = skin_choice_settings
+            if not skin_choice_displayed:
+                print("Skin choice affiché")
+                skin_choice_displayed = True
+                current_settings = skin_choice_settings
         elif current_settings == volume_settings:
             print("Sélection de la musique")
             if not music_settings_displayed:
@@ -912,6 +959,8 @@ while running:
             if not default_energy_settings_displayed:
                 default_energy_settings_displayed=True
                 current_settings = default_energy_settings
+
+
         elif current_settings == default_energy_settings:
             print("Sélection de default_energy_settings")
             if not default_mass_settings_displayed:
@@ -969,10 +1018,17 @@ while running:
                 max_framerate_settings_displayed=True
                 current_settings = max_framerate_settings
         elif current_settings == reproducing_energy_settings:
-            print("Sélection de max_framerate_settings")
+            print("Sélection de tick_number_settings")
             if not tick_number_settings_displayed:
                 tick_number_settings_displayed=True
                 current_settings = tick_number_settings
+                if (current_settings == tick_number_settings) :
+                    print("On est dans settings de tick number !!!!!!")
+        elif current_settings == tick_number_settings:
+            print("Sélection de map_settings , ON EST BIEN A LINTERIEUR")
+            if not map_settings_displayed:
+                map_settings_displayed=True
+                current_settings = map_settings
         
         
     # Gestion de la touche "Echap"
@@ -992,6 +1048,12 @@ while running:
             bob_number_settings_displayed = False
             how_to_play_settings_displayed = True
             print("Retour à how_to_play_settings depuis bob_number_settings")
+        elif current_settings == map_settings:
+            escape_pressed = True
+            current_settings = tick_number_settings
+            map_settings_displayed= False
+            tick_number_displayed = True
+            print("Retour à tick_number depuis map settings")
         
         elif current_settings == skin_choice_settings:
             escape_pressed=True
@@ -1111,7 +1173,7 @@ while running:
                                         slider_height, cursor_offset_y, current_value_bob, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_bob)
         text_volume_bob = font_slider_bob.render(f"{(int)(current_value_bob)} bobs", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_bob = text_volume_bob.get_rect(center=(cursor_slider_bob.x + \
                                                                 cursor_slider_bob.width + 30, cursor_slider_bob.y - 20))
         
@@ -1119,6 +1181,17 @@ while running:
         screen.blit(text_volume_bob, text_rect_volume_bob)
     else:
         update_slider_position_bob()  # Met à jour la position du curseur
+
+    if tick_number_settings_displayed and current_settings == tick_number_settings:
+        # Dessin de la barre du slider
+        tick_number_settings.draw_slider(screen, slider_x_tick_number, slider_y_tick_number, slider_length, \
+                                        slider_height, cursor_offset_y, current_tick_number, max_value)
+        pygame.draw.rect(screen, (255, 0, 0), cursor_slider_tick_number)
+        text_volume_tick_number = font_slider_tick_number.render(f"{(int)(current_tick_number)} ", True, \
+                                                (255, 255, 255))
+        text_rect_volume_tick_number= text_volume_tick_number.get_rect(center=(cursor_slider_tick_number.x + \
+                                                                cursor_slider_tick_number.width + 30, cursor_slider_tick_number.y - 20))
+        screen.blit(text_volume_tick_number, text_rect_volume_tick_number)
 
     
 
@@ -1129,7 +1202,7 @@ while running:
                                         slider_height, cursor_offset_y, current_newborn_energy_parth, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_newborn_energy_parth)
         text_volume_newborn_energy_parth = font_slider_newborn_energy_parth.render(f"{(int)(current_newborn_energy_parth)} ", True, (255, 255, 255))
-       
+    
         text_rect_volume_newborn_energy_parth = text_volume_newborn_energy_parth.get_rect(center=(cursor_slider_newborn_energy_parth.x + \
                                                                 cursor_slider_newborn_energy_parth.width + 30, cursor_slider_newborn_energy_parth.y - 20))
         print("debug :", text_volume_newborn_energy_parth,text_rect_volume_newborn_energy_parth)
@@ -1138,7 +1211,7 @@ while running:
         screen.blit(text_volume_newborn_energy_parth, text_rect_volume_newborn_energy_parth)
     else:
         update_slider_position_newborn_energy_parth()  # Met à jour la position du curseur
-   
+
     # Dessin du slider, après l'image
     if newborn_energy_sexual_settings_displayed and current_settings == newborn_energy_sexual_settings:
         # Dessin de la barre du slider
@@ -1146,7 +1219,7 @@ while running:
                                         slider_height, cursor_offset_y, current_newborn_energy_sexual, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_newborn_energy_sexual)
         text_volume_newborn_energy_sexual = font_slider_newborn_energy_sexual.render(f"{(int)(current_newborn_energy_sexual)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_newborn_energy_sexual = text_volume_newborn_energy_sexual.get_rect(center=(cursor_slider_newborn_energy_sexual.x + \
                                                                 cursor_slider_newborn_energy_sexual.width + 30, cursor_slider_newborn_energy_sexual.y - 20))
         screen.blit(text_volume_newborn_energy_sexual, text_rect_volume_newborn_energy_sexual)
@@ -1161,7 +1234,7 @@ while running:
                                         slider_height, cursor_offset_y, current_default_energy, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_default_energy)
         text_volume_default_energy = font_slider_default_energy.render(f"{(int)(current_default_energy)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_default_energy = text_volume_default_energy.get_rect(center=(cursor_slider_default_energy.x + \
                                                                 cursor_slider_default_energy.width + 30, cursor_slider_default_energy.y - 20))
         screen.blit(text_volume_default_energy, text_rect_volume_default_energy)
@@ -1175,7 +1248,7 @@ while running:
                                         slider_height, cursor_offset_y, current_default_mass, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_default_mass)
         text_volume_default_mass = font_slider_default_mass.render(f"{(int)(current_default_mass)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_default_mass = text_volume_default_mass.get_rect(center=(cursor_slider_default_mass.x + \
                                                                 cursor_slider_default_mass.width + 30, cursor_slider_default_mass.y - 20))
         screen.blit(text_volume_default_mass, text_rect_volume_default_mass)
@@ -1189,7 +1262,7 @@ while running:
                                         slider_height, cursor_offset_y, current_default_memory, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_default_memory)
         text_volume_default_memory = font_slider_default_memory.render(f"{(int)(current_default_memory)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_default_memory = text_volume_default_memory.get_rect(center=(cursor_slider_default_memory.x + \
                                                                 cursor_slider_default_memory.width + 30, cursor_slider_default_memory.y - 20))
         screen.blit(text_volume_default_memory, text_rect_volume_default_memory)
@@ -1203,7 +1276,7 @@ while running:
                                         slider_height, cursor_offset_y, current_default_perception, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_default_perception)
         text_volume_default_perception = font_slider_default_perception.render(f"{(int)(current_default_perception)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_default_perception = text_volume_default_perception.get_rect(center=(cursor_slider_default_perception.x + \
                                                                 cursor_slider_default_perception.width + 30, cursor_slider_default_perception.y - 20))
         screen.blit(text_volume_default_perception, text_rect_volume_default_perception)
@@ -1217,7 +1290,7 @@ while running:
                                         slider_height, cursor_offset_y, current_default_speed, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_default_speed)
         text_volume_default_speed = font_slider_default_speed.render(f"{(int)(current_default_speed)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_default_speed = text_volume_default_speed.get_rect(center=(cursor_slider_default_speed.x + \
                                                                 cursor_slider_default_speed.width + 30, cursor_slider_default_speed.y - 20))
         screen.blit(text_volume_default_speed, text_rect_volume_default_speed)
@@ -1231,7 +1304,7 @@ while running:
                                         slider_height, cursor_offset_y, current_food_number, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_food_number)
         text_volume_food_number = font_slider_food_number.render(f"{(int)(current_food_number)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_food_number = text_volume_food_number.get_rect(center=(cursor_slider_food_number.x + \
                                                                 cursor_slider_food_number.width + 30, cursor_slider_food_number.y - 20))
         screen.blit(text_volume_food_number, text_rect_volume_food_number)
@@ -1245,7 +1318,7 @@ while running:
                                         slider_height, cursor_offset_y, current_loose_of_energy_repr, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_loose_of_energy_repr)
         text_volume_loose_of_energy_repr = font_slider_loose_of_energy_repr.render(f"{(int)(current_loose_of_energy_repr)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_loose_of_energy_repr = text_volume_loose_of_energy_repr.get_rect(center=(cursor_slider_loose_of_energy_repr.x + \
                                                                 cursor_slider_loose_of_energy_repr.width + 30, cursor_slider_loose_of_energy_repr.y - 20))
         screen.blit(text_volume_loose_of_energy_repr, text_rect_volume_loose_of_energy_repr)
@@ -1259,7 +1332,7 @@ while running:
                                         slider_height, cursor_offset_y, current_max_energy, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_max_energy)
         text_volume_max_energy= font_slider_max_energy.render(f"{(int)(current_max_energy)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         print("debug : ", current_max_energy)
         text_rect_volume_max_energy = text_volume_max_energy.get_rect(center=(cursor_slider_max_energy.x + \
                                                                 cursor_slider_max_energy.width + 30, cursor_slider_max_energy.y - 20))
@@ -1274,7 +1347,7 @@ while running:
                                         slider_height, cursor_offset_y, current_max_framerate, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_max_framerate)
         text_volume_max_framerate = font_slider_max_framerate.render(f"{(int)(current_max_framerate)}", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_max_framerate = text_volume_max_framerate.get_rect(center=(cursor_slider_max_framerate.x + \
                                                                 cursor_slider_max_framerate.width + 30, cursor_slider_max_framerate.y - 20))
         screen.blit(text_volume_max_framerate, text_rect_volume_max_framerate)
@@ -1288,7 +1361,7 @@ while running:
                                         slider_height, cursor_offset_y, current_reproducing_energy, max_value)
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_reproducing_energy)
         text_volume_reproducing_energy = font_slider_bob.render(f"{(int)(current_reproducing_energy)} ", True, \
-                                                 (255, 255, 255))
+                                                (255, 255, 255))
         text_rect_volume_reproducing_energy= text_volume_reproducing_energy.get_rect(center=(cursor_slider_reproducing_energy.x + \
                                                                 cursor_slider_reproducing_energy.width + 30, cursor_slider_reproducing_energy.y - 20))
         screen.blit(text_volume_reproducing_energy, text_rect_volume_reproducing_energy)
@@ -1299,17 +1372,21 @@ while running:
 ########################################################END MENU################
     
     # Dessin du slider, après l'image
-    if tick_number_settings_displayed and current_settings == tick_number_settings:
+    if map_settings_displayed and current_settings == map_settings:
         # Dessin de la barre du slider
-        tick_number_settings.draw_slider(screen, slider_x_tick_number, slider_y_tick_number, slider_length, \
-                                        slider_height, cursor_offset_y, current_tick_number, max_value)
-        pygame.draw.rect(screen, (255, 0, 0), cursor_slider_tick_number)
-        text_volume_tick_number = font_slider_tick_number.render(f"{(int)(current_tick_number)} ", True, \
+        map_settings.draw_slider(screen, slider_x_map, slider_y_map, slider_length, \
+                                        slider_height, cursor_offset_y, current_map, max_value)
+        pygame.draw.rect(screen, (255, 0, 0), cursor_slider_map)
+        text_map = font_slider_tick_number.render(f"{(int)(current_map)} ", True, \
                                                 (255, 255, 255))
-        text_rect_volume_tick_number= text_volume_tick_number.get_rect(center=(cursor_slider_tick_number.x + \
-                                                                cursor_slider_tick_number.width + 30, cursor_slider_tick_number.y - 20))
-        screen.blit(text_volume_tick_number, text_rect_volume_tick_number)
-
+        text_rect_map= text_map.get_rect(center=(cursor_slider_map.x + \
+                                                                cursor_slider_map.width + 30, cursor_slider_map.y - 20))
+        screen.blit(text_map, text_rect_map)
+        
+        if doonce == True:
+            enter_pressed = False
+            doonce = False
+        
         if enter_pressed:
             #tab_settings = [current_food_number,current_value_bob,current_max_framerate,current_tick_number,20,32/2,current_default_energy,current_reproducing_energy,current_loose_of_energy_repr,current_newborn_energy_sexual,current_newborn_energy_parth,current_max_energy,current_default_perception,current_default_speed,current_default_mass,current_default_memory]
             #game_setting = my_Settings(tab_settings)
@@ -1317,12 +1394,14 @@ while running:
             with open(file_path, 'r') as file:
                 settings = json.load(file)
             
+            settings['BOB_IMAGE'] = set_skin_choisis
             settings['NUMBER_FOOD'] = current_food_number
             settings['NUMBER_BOB'] = current_value_bob
             settings['FRAME_RATE'] = current_max_framerate
             settings['TICK'] = current_tick_number
 
-            settings['GRID_SIZE'] = 80
+            settings['GRID_SIZE'] = current_map
+            #settings['CELL_SIZE'] = -8/33*current_map + 1328/33
             settings['CELL_SIZE'] = 32/2
 
             settings['DEFAULT_ENERGY'] = current_default_energy
@@ -1344,14 +1423,14 @@ while running:
             
 
     else:
-        update_slider_position_tick_number()  # Met à jour la position du curseur
+        update_slider_position_map()  # Met à jour la position du curseur
 
 ########################################################END MENU################
 
     if volume_settings_displayed and current_settings == volume_settings:
         # Dessin de la barre du slider
         volume_settings.draw_slider(screen, slider_x_volume, slider_y_volume, slider_length, \
-                                     slider_height, cursor_offset_y, current_volume, max_value)
+                                    slider_height, cursor_offset_y, current_volume, max_value)
         # Dessin du curseur du slider
         pygame.draw.rect(screen, (255, 0, 0), cursor_slider_volume)
         text_volume = font_slider_volume.render(f"{current_volume} %", True, (255, 255, 255))
@@ -1361,11 +1440,11 @@ while running:
     else:
         update_slider_position_volume()  # Met à jour la position du curseur
     
-    print("VOICI LES VALEURS CHOISIES , newborn energy parth:",current_newborn_energy_parth,"newborn energy sexual :",current_newborn_energy_sexual,"default energy:",current_default_energy,"default mass:",current_default_mass,"default_memory:",current_default_memory,"default perception :",current_default_perception,"default speed :",current_default_speed,"food number :",current_food_number,"loose of energy repr :",current_loose_of_energy_repr,"max energy :",current_max_energy,"max framerate : ",current_max_framerate,"reproducing energy:" ,current_reproducing_energy,"tick number : ",current_tick_number,"volume :",current_volume,"bob number :",current_value_bob)
+    print("VOICI LES VALEURS CHOISIES , newborn energy parth:",current_newborn_energy_parth,"newborn energy sexual :",current_newborn_energy_sexual,"default energy:",current_default_energy,"default mass:",current_default_mass,"default_memory:",current_default_memory,"default perception :",current_default_perception,"default speed :",current_default_speed,"food number :",current_food_number,"loose of energy repr :",current_loose_of_energy_repr,"max energy :",current_max_energy,"max framerate : ",current_max_framerate,"reproducing energy:" ,current_reproducing_energy,"tick number : ",current_tick_number,"volume :",current_volume,"bob number :",current_value_bob,"TAILLE MAP :",current_map, "SET SKINS : ",set_skin_choisis)
 
     # Dessin du CURSEUR DE SELECTION
     pygame.draw.rect(screen, current_settings.rect_color, (current_settings.rect_x, current_settings.rect_y, \
-                                                           current_settings.rect_width, current_settings.rect_height), 2)
+                                                        current_settings.rect_width, current_settings.rect_height), 2)
     
     if current_settings!=main_menu_settings:
         screen.blit(text_surface_settings, text_hitbox_settings)
@@ -1373,7 +1452,7 @@ while running:
         screen.blit(text_surface_main_menu,text_hitbox_main_menu)
         screen.blit(text_credits,text_hitbox_credits)
         # Rafraîchissement de l'écran
-   
+
     
     pygame.display.flip()
     
@@ -1385,5 +1464,6 @@ while running:
 #pygame.quit()
 pygame.time.delay(1000)
 pygame.display.quit()
-main.launch()
+#main.launch()
+
 

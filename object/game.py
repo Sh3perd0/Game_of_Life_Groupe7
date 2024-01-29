@@ -55,6 +55,7 @@ class Game:
             # self.clock.tick(1)
 
     def events(self):
+        paused = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -64,8 +65,23 @@ class Game:
                     self.save()
                 if event.key == pygame.K_l:
                     self.load()
+                if event.key == pygame.K_p:  # Appuyez sur 'P' pour mettre en pause
+                    paused = not paused
                 if event.key == pygame.K_ESCAPE:
                     self.playing = False
+        while paused:
+            self.show_paused_text()
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_p:  # Appuyez à nouveau sur 'P' pour reprendre
+                        paused = False
+    
+    def show_paused_text(self):
+        pygame.display.update()
+        font = pygame.font.SysFont(None, 55)
+        paused_text = font.render('PAUSED', True, (255, 0, 0)) # Texte rouge
+        text_rect = paused_text.get_rect(center=(1000, 100)) # Centrer le texte
+        self.screen.blit(paused_text, text_rect) # Afficher le texte sur l'écran
                 
     def load(self):
         with open("save.pkl", "rb") as file:
@@ -83,7 +99,7 @@ class Game:
         self.parthenogenesis_reproduce()
         self.sexual_reproduction()
         self.die()
-        if self.newAnalyse() == -1:  # si on retourne 1, il n'y a plus de bob
+        if self.newAnalyse() == 0:  # si on retourne 1, il n'y a plus de bob
             self.playing = False
 
         self.tick += 1
@@ -200,7 +216,7 @@ class Game:
         self.entity_activity.move_towards_target()
 
     def newAnalyse(self):
-        self.entity_activity.newAnalyse()
+        return self.entity_activity.newAnalyse()
 
     def update_list_bob(self):
         self.entity_activity.list_bob = sorted(

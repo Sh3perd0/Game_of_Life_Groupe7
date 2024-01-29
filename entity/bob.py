@@ -137,4 +137,4 @@ class Bob(Entity):
             return False
 
     def get_pixel_bob_size(self):
-        return 321 / 8 * self.volume, 25 / 2 * self.volume
+        return 321 / 8 * self.volume, 25 / 2 * self.volume + CELL_SIZE

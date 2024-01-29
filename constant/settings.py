@@ -1,4 +1,4 @@
-
+import random
 import json
 # Name_file_image
 def load_settings():
@@ -9,7 +9,8 @@ def load_settings():
 
 settings = load_settings()
 
-BOB_IMAGE = settings['BOB_IMAGE']
+BOB_IMAGE = settings['BOB_IMAGE'][random.randint(0,2)]
+#BOB_IMAGE = settings['BOB_IMAGE'][2]
 FOOD_IMAGE = settings['FOOD_IMAGE']
 CELL_IMAGE = settings['CELL_IMAGE']
 

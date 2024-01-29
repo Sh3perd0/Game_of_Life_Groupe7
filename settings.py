@@ -31,6 +31,10 @@ class Settings:
         slider_difference_volume = slider_x_volume - slider_x_start
         return slider_difference_volume
     
+    def get_slider_value_map(self, slider_x_map, slider_x_start, slider_length, max_value):
+    # Calculez la différence entre la position actuelle du curseur et la position initiale
+        slider_difference_map = slider_x_map - slider_x_start
+        return slider_difference_map
     
     def get_slider_value_newborn_energy_parth(self, slider_x_newborn_energy_parth, slider_x_start, slider_length, max_value):
         slider_difference_newborn_energy_parth = slider_x_newborn_energy_parth - slider_x_start       

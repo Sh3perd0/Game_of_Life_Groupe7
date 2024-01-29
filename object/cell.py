@@ -2,6 +2,7 @@ import pygame
 from constant.settings import *
 import os
 from .common import *
+from constant.settings import *
 
 
 class Cell:
@@ -38,6 +39,7 @@ class Cell:
     # @staticmethod
     def get_pixel_cells_size():
         return 321 / 8, 161 / 8
+        #return CELL_SIZE*(321/8/16), (CELL_SIZE/2)*(321/8/16)
 
     # # Transform the size of block's asset as standard
     # @staticmethod
