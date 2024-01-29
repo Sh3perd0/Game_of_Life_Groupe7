@@ -37,6 +37,7 @@ class Bob(Entity):
         self.food_memory = []
         self.birthTick = gva.time
         self.available_memory =  2 * self.memory
+        self.font = pygame.font.Font(None, 36)
 
     def set_mass_volume(self, mass):
         self.mass = mass
@@ -137,4 +138,4 @@ class Bob(Entity):
             return False
 
     def get_pixel_bob_size(self):
-        return 321 / 8 * self.volume, 25 / 2 * self.volume + CELL_SIZE
+        return 321 / 8 * self.volume, 25 / 2 * self.volume

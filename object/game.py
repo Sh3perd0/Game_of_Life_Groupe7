@@ -136,12 +136,11 @@ class Game:
                     render_pos[1] + map_block_tiles.get_height() / 4 + scroll.y,
                 ),
             )
-
-            # energy_text = bob.font.render(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}', True, (255, 255, 255))
-            # text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
-            #                                       render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
-            # self.screen.blit(energy_text, text_rect)
-            # print(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}')
+            energy_text = bob.font.render(f'Per: {bob.perception:.2f}, Pos:{bob.grid_x, bob.grid_y}, Ener: {bob.energy:.2f}, Speed:{bob.total_speed:.2f}, Memory : {bob.memory}', True, (255, 255, 255))
+            text_rect = energy_text.get_rect(center=(render_pos[0] + map_block_tiles.get_width()/2 + scroll.x,
+            render_pos[1] + map_block_tiles.get_height()/4 + scroll.y - 20))
+            self.screen.blit(energy_text, text_rect)
+            print(f'Position: {(bob.grid_x, bob.grid_y)}, Target: {bob.target}, Speed:{bob.total_speed:.2f}')
 
     # This version is for food with same size (faster)
     def draw_food(self):

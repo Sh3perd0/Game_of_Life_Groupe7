@@ -9,6 +9,7 @@ from entity.entity import Entity
 class Food(Entity):
     def __init__(self):
         super().__init__()
+        self.font = pygame.font.Font(None, 36)
 
     def set_energy(self, energy=DEFAULT_ENERGY):
         self.energy = energy

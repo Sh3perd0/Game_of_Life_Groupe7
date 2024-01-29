@@ -72,7 +72,7 @@ default_mass_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 
 default_memory_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "default_memory.png" , (default_width_image,default_height_image))
 max_framerate_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "max_framerate.png" , (default_width_image,default_height_image))
 newborn_energy_sexual_settings = Settings(current_res_x // 2 - 423, current_res_y // 2 + 130, 820, 155, (255, 255, 0), "_newborn_energy_sexual.png" , (default_width_image,default_height_image))
-map_settings = Settings(current_res_x // 2 - 410, current_res_y // 2 + 140, 820, 155, (255, 255, 0), "gridsize.png" , (default_width_image,default_height_image))
+map_settings = Settings(current_res_x // 2 - 410, current_res_y // 2 + 153, 820, 155, (255, 255, 0), "gridsize.png" , (default_width_image,default_height_image))
 
 
 
